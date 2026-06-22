@@ -1,0 +1,42 @@
+# Soc Working Memory — Erdős Problem 142
+
+GOAL: Determine the asymptotic exponent α₃ such that r_3(N) = N·exp(-Θ((log N)^{α₃})).
+      Primary near-term target: r_3(N) ≤ N·exp(-c(log N)^{1/3}) [Sifting Hierarchy m=4 prediction].
+      Ultimate target: r_3(N) ≤ N·exp(-c(log N)^{1/2}) [matching Behrend lower bound, Kelley–Lyu motivation].
+
+PROGRESS: 3 / 5 gaps profiled and prioritized; 2 gaps ready for Lovász; 1 gap ready for Generator
+INSIGHTS_SINCE_LAST_UPDATE: 4 (see INSIGHTS below)
+
+QUEUE:
+  - [x] Freeze 5 gap targets (GAP1–GAP5) — DONE (explorer_target_model.json)
+  - [x] Produce handoff.json for Lovász (top 2 gaps: GAP1, GAP3) — DONE
+  - [x] Produce barrier_packet.json with precise lemma statements — DONE
+  - [ ] Send GAP1 (BL1-GRID) to Lovász: ℓ¹ spectral normalization question
+  - [ ] Send GAP3 (BL3-QCS + van Corput) to Lovász: k=4 quasi-poly quick check
+  - [ ] Send GAP5 WIT steps 6, 8, 5 to Generator: rk_le_N, rk_pos, rk_three_eq_rothNumberNat
+  - [ ] After Lovász: send GAP2 (BL2: Doubly-Iterated AP) to Generator
+
+INSIGHTS:
+  - F1: For f = 1_A (non-negative), |Spec_δ(1_A)| ≤ O(α^{-1}) relative to ℓ¹ norm (not O(α^{-2}) relative to ℓ² norm). This may be the mechanism behind Kelley–Lyu's exponent improvement. Key question for Lovász: is ℓ¹ normalization sufficient for the Kelley–Meka density increment?
+  - F2: 3-AP counting formula Λ₃(A) = (1/N)Σ_ξ|Â(ξ)|²Â̄(2ξ) has bilinear (grid-like) structure. The non-negative factor |Â(ξ)|² might be the "grid norm" structure exploited by Kelley–Lyu.
+  - F3: Van der Corput might give r_4(N) ≤ N·exp(-(log N)^{1/12}) from Raghavan's r_3(N) ≤ N·exp(-(log N)^{1/6}) — needs verification by Lovász.
+  - F4: WIT sorry steps 6 (rk_le_N) and 8 (rk_pos) are immediately provable from definitions; step 5 (rk_three_eq_rothNumberNat) tractable via hasKAP_three_iff_not_threeAPFree sub-lemma.
+
+BARRIER_LEMMAS:
+  - BL1-GRID: L¹-Almost-Periodicity / Grid-Norm Croot–Sisask [OPEN, GAP1, for Lovász]
+  - BL2-DOUBLE-AP: Doubly-Conditioned Almost-Periodicity [OPEN, GAP2, for Generator after Lovász]
+  - BL3-QCS: Quadratic Croot–Sisask for U³ [OPEN, GAP3, for Lovász]
+  - BL5-HASAP: HasKAP ↔ ¬ThreeAPFree in Lean 4 [TRACTABLE, GAP5, for Generator]
+
+BEST_KNOWN:
+  - r_3(N) upper: N·exp(-c(log N)^{1/6} / log log N) [Raghavan 2026]
+  - r_3(N) lower: N·exp(-C(log N)^{1/2}) [Behrend 1946, improved constant 2024]
+  - r_4(N) upper: N·(log N)^{-c} [Green–Tao 2017]
+  - r_k(N) upper (k≥5): N·exp(-(log log N)^{c_k}) [Leng–Sah–Sawhney 2024]
+  - WIT formalization: 4/12 steps DONE (no sorry)
+
+LOG:
+  - 2026-06-21: Explorer phase complete. 5 gaps profiled. 4 barrier lemmas identified. 4 key findings recorded.
+  - Generated: explorer_target_model.json, handoff.json, barrier_packet.json, gap_analysis.md
+  - Witsoc commands run: next-action, proof-workflow
+  - Pipeline ready: → Lovász (GAP1, GAP3) + Generator (GAP5) in parallel

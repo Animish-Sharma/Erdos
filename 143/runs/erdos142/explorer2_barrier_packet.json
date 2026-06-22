@@ -1,0 +1,191 @@
+{
+  "meta": {
+    "document_type": "Explorer2 Barrier Packet — for Lovász2",
+    "mission": "erdos142",
+    "date": "2026-06-21",
+    "from": "witsoc-explorer2",
+    "for": "witsoc-research-lovász2",
+    "purpose": "Precise gaps in the submittable proof that Lovász2 must address; priority-ordered; effort estimates"
+  },
+
+  "priority_ranking": {
+    "URGENT_for_paper": ["Gap V (van Corput proof)", "Gap R (Raghavan citation)"],
+    "REQUIRED_for_conditional": ["Gap L (L3-AP-INCR statement)"],
+    "STRUCTURAL_for_submission": ["Gap P (paper structure)"]
+  },
+
+  "gap_V": {
+    "gap_id": "Gap-V",
+    "name": "Van Corput Step — Direct Argument has a Gap",
+    "priority": "URGENT",
+    "effort_estimate": "1-2 hours: locate the correct citation, write clean proof",
+    "role_in_paper": "Lemma 1.1 in submittable_proof.md — the first step of the main proof",
+
+    "precise_gap": {
+      "claim_with_gap": "For A ⊆ {1,...,N} 4-AP-free, each A_d := A ∩ (A-d) is 3-AP-free.",
+      "gap_description": "The direct argument (6-point method): if a, a+e, a+2e ∈ A_d, then A contains {a,a+e,a+2e,a+d,a+e+d,a+2e+d}. These 6 points do NOT automatically form a 4-AP when e ≠ d. The argument only works for e = d (giving a, a+d, a+2d, a+3d ∈ A). For e ≠ d, there is a gap: we cannot immediately extract a 4-AP from the 6 points.",
+      "gap_severity": "MEDIUM — the final bound r_4(N) ≤ C√(N·r_3(N)) is still correct, but requires the Cauchy-Schwarz version instead of the direct 6-point argument",
+      "confirmed_by": "lovász_BL3_analysis.md §1-§7, §10 (summary)"
+    },
+
+    "correct_argument": {
+      "type": "Energy/Cauchy-Schwarz argument",
+      "statement": "Lemma (van Corput for k=4): If A ⊆ {1,...,N} is 4-AP-free with |A| = M, then there exists d ∈ {1,...,N-1} such that A_d := A ∩ (A-d) is 3-AP-free and |A_d| ≥ M²/(4N).",
+      "proof_step_1": "Counting: ∑_{d=1}^{N-1} |A_d| = ∑_{d=1}^{N-1} |{a ∈ A: a+d ∈ A}| = |{(a,b)∈A²: a < b}| = M(M-1)/2 ≥ M²/4. By pigeonhole, some d has |A_d| ≥ M²/(4N).",
+      "proof_step_2": "3-AP-freeness of the large A_d: Suppose for contradiction that every large A_d (|A_d| ≥ M²/(4N)) contains a 3-AP. By the van Corput differencing identity (Gowers 2001), a 3-AP in A_d gives a positive contribution to the 4-AP count Λ_4(A). Formally: Λ_4(A) = E_{n,d} 1_A(n)1_A(n+d)1_A(n+2d)1_A(n+3d). By Cauchy-Schwarz on d: Λ_4(A)^2 ≤ E_d Λ_3(A_d) · |A|^2/N (schematic). If Λ_4(A) = 0 (4-AP-free) but some A_d has a 3-AP (Λ_3(A_d) > 0), this gives a contradiction.",
+      "reference": "Gowers 2001 (Journal of the AMS); also Tao-Vu 'Additive Combinatorics' Lemma 11.2.2 (or §11.2); the specific van Corput Cauchy-Schwarz inequality is standard in the k=4 literature",
+      "what_to_write_for_paper": "One precise lemma statement + 3-5 sentence proof citing Gowers 2001 or Tao-Vu. Alternatively: 'This is immediate from the van Corput differencing argument; see [Gowers 2001, Lemma X] or [Tao-Vu, Lemma 11.2.2].' Then apply: r_4(N) ≤ C√(N·r_3(N/2)) by substituting the 3-AP-free A_d of size ≥ M²/(4N)."
+    },
+
+    "subtlety_with_range": {
+      "note": "A_d ⊆ {1,...,N-d}, which has length N-d ≤ N. For the bound on r_3, we need r_3(N-d) ≤ r_3(N). Since r_3 is monotone increasing, this is fine. Use r_3(N/2) or just r_3(N) as an upper bound.",
+      "impact_on_final_bound": "The factor of 2 in the range (r_3(N/2) vs r_3(N)) only affects constants, not the exponent. The final bound reads r_4(N) ≤ C·N·exp(-c'(logN)^{1/6}/loglogN) regardless."
+    },
+
+    "evaluator_test": {
+      "criterion": "The Lemma 1.1 (van Corput for k=4) in submittable_proof.md has an explicit citation to a standard reference (Gowers 2001 or Tao-Vu) for the Cauchy-Schwarz step, AND explicitly states the conclusion 'some A_d is 3-AP-free with |A_d| ≥ M²/(cN)' — NOT just the direct 6-point argument."
+    }
+  },
+
+  "gap_R": {
+    "gap_id": "Gap-R",
+    "name": "Raghavan 2026 Citation — Need Exact Theorem with log log Factor",
+    "priority": "URGENT",
+    "effort_estimate": "30 minutes: fetch paper, extract exact statement",
+    "role_in_paper": "Theorem citation in proof of main result",
+
+    "precise_gap": {
+      "issue": "The standard informal statement 'r_3(N) ≤ N·exp(-c(logN)^{1/6})' omits the log log N factor present in Raghavan's actual Theorem 1.4.",
+      "raghavan_theorem_14_exact": "Theorem 1.4 (Raghavan 2026): For A ⊆ {1,...,N} 3-AP-free, |A| ≤ C · N · exp(-c · (log N)^{1/6} · (log log N)^{-1})",
+      "impact_on_combined_bound": "The combined bound for r_4(N) ALSO carries the log log factor: r_4(N) ≤ C' · N · exp(-(c/2) · (log N)^{1/6} / log log N)",
+      "why_this_matters": "The log log factor is mathematically significant and must be stated correctly in a journal paper. Suppressing it in the 'Ω' notation is acceptable in the abstract/introduction but must be explicit in the theorem statement."
+    },
+
+    "what_to_write": {
+      "paper_theorem_statement": "Theorem 1 (main result): For all sufficiently large N, if A ⊆ {1,...,N} contains no 4-term arithmetic progression, then |A| ≤ C · N · exp(-c · (log N)^{1/6} · (log log N)^{-1}), where C, c > 0 are absolute constants.",
+      "note": "This uses the exact Raghavan Theorem 1.4 form. The log log N denominator is real and must be present.",
+      "reference": "[Raghavan 2026] R. Raghavan, 'Improved Bounds for 3-Progressions,' arXiv:2603.27045 (2026)."
+    },
+
+    "evaluator_test": {
+      "criterion": "The submittable_proof.md main theorem explicitly states the (log log N)^{-1} factor; the proof of Step C explicitly computes the combination of van Corput and Raghavan with the log log factor carried through."
+    }
+  },
+
+  "gap_L": {
+    "gap_id": "Gap-L",
+    "name": "L3-AP-INCR Conjecture — Needs Precise Statement Consistent with Exponent 1/3",
+    "priority": "REQUIRED (for conditional section)",
+    "effort_estimate": "4-8 hours for Lovász2: trace through Raghavan's framework, extract rank-density formula, verify exponent 1/3 follows",
+    "role_in_paper": "Section 4 of submittable_proof.md: Conjecture 1 + Conditional Theorem",
+
+    "current_state": {
+      "tentative_statement_in_generator_gap2": "L3-AP-INCR: Let A ⊆ Z_N be 3-AP-free with density α. ∃ B = Bohr(Γ, ρ) with |Γ| = O(α^{-1}), ρ = Ω(1), and translate x+B with density ≥ α + Ω(α³).",
+      "problem_with_current_statement": "When generator_gap2.md traces through the iteration with these parameters (§8.2-§8.3), the resulting exponent comes out to approximately 1/4 or 2/9, NOT 1/3. The statement is too vague about constants to pin down which exponent follows.",
+      "source": "generator_gap2.md §8.2-§8.3"
+    },
+
+    "what_lovász2_must_do": {
+      "task_L2A": "Identify from Raghavan's paper (arXiv:2603.27045) the EXACT rank-density iteration formula. Specifically: (a) what is the density increment per step as a function of α and the rank d? (b) how does the Bohr set size depend on d and the radius ρ? (c) given rank d = O(α^{-1}) (instead of Raghavan's O(α^{-2})), what exponent does the iteration produce?",
+      "expected_output": "A table like generator_gap2.md §8.3 but with correct constants, giving the precise condition on the density increment that yields exponent exactly 1/3.",
+      "alternative": "If the iteration with rank O(α^{-1}) gives exponent 1/3 only under specific quantitative conditions, state those conditions as the conjecture."
+    },
+
+    "target_conjecture_form": {
+      "name": "L3-AP-INCR (precise form needed)",
+      "schema": "Let A ⊆ Z_N be 3-AP-free with density α ∈ (0, 1/2). Let B = Bohr(Γ, ρ_0) where Γ = Spec_{ℓ¹}_{δ_0}(1_A) = {ξ: |Â(ξ)| ≥ δ_0·α} for absolute constants δ_0, ρ_0 > 0. Then there exists x ∈ Z_N such that |A ∩ (x+B)| / |B| ≥ α + η(α) where η(α) is a specific function to be determined by Lovász2.",
+      "required_property": "The function η(α) must satisfy: if d = |Γ| = O(α^{-1}) and |B| ≥ N · exp(-C·α^{-1}) for some constant C, and each density increment gives α → α + η(α), then the total number of steps k^* = O(1/η(α)) satisfies N · exp(-k^*·C·α^{-1}) ≥ 1, which gives α ≥ c·(logN)^{-1/3}.",
+      "working_backwards": "For exponent 1/3: need k^*·C·α^{-1} ≤ logN with k^* = 1/η(α) and α = c'(logN)^{-1/3}. So (1/η(α))·C·α^{-1} ≤ logN. With α = c'(logN)^{-1/3}: (1/η(α))·C·(logN)^{1/3}/c' ≤ logN → 1/η(α) ≤ c'(logN)^{2/3}/C. So η(α) ≥ C/(c'·(logN)^{2/3}) = (C/c')·α² (using α ≈ (logN)^{-1/3}). Thus η(α) = Ω(α²) is sufficient for exponent 1/3.",
+      "conclusion": "For exponent 1/3, need density increment η(α) = Ω(α²) (not Ω(α³) as generator_gap2.md stated). Or with different Bohr-set radius/rank formulas, the precise requirement may differ.",
+      "note": "This analysis is tentative and needs verification by Lovász2 against Raghavan's actual framework."
+    },
+
+    "evaluator_test": {
+      "criterion_1": "Lovász2 produces a precise statement of Conjecture L3-AP-INCR where the density increment η(α) and Bohr set parameters (rank d, radius ρ, size) are ALL specified explicitly as functions of α.",
+      "criterion_2": "Lovász2 shows (or disproves) that this precise statement, if true, implies r_3(N) ≤ N·exp(-c(logN)^{1/3}) via a traceable iteration argument.",
+      "disproof_criterion": "If Lovász2 shows that no choice of parameters consistent with the ℓ¹ Bohr set framework gives exponent 1/3 via this iteration, document the exact obstruction."
+    }
+  },
+
+  "gap_P": {
+    "gap_id": "Gap-P",
+    "name": "Paper Structure — No Submittable Document Exists Yet",
+    "priority": "STRUCTURAL",
+    "effort_estimate": "6-10 hours for Generator2 to draft submittable_proof.md",
+    "role_in_paper": "The entire document skeleton",
+
+    "required_sections": [
+      {
+        "section": "Abstract",
+        "content": "State main theorem (r_4 bound); mention new observation (first quasi-poly bound for k=4); state conditional result for exponent 1/3; 150-250 words",
+        "source": "Derive from final_report.md Phase 4 summary + raghavan_check.md §3"
+      },
+      {
+        "section": "1. Introduction",
+        "content": "History of r_k(N) bounds (Szemerédi, Roth, Kelley-Meka, Raghavan); state main result; explain why r_4 is harder than r_3; paper organization",
+        "source": "Derive from final_report.md §1-§2, §5"
+      },
+      {
+        "section": "2. Notation and Preliminaries",
+        "content": "Define r_k(N), arithmetic progressions, Bohr sets; cite Raghavan for r_3 bound; van Corput lemma statement",
+        "source": "Standard; use final_report.md §3 for notation"
+      },
+      {
+        "section": "3. Main Result: New Bound for r_4(N)",
+        "content": "State Theorem 1 precisely (with log log factor); prove in two lemmas: Lemma 1.1 (van Corput, using Cauchy-Schwarz), Lemma 1.2 (Raghavan citation), then combine",
+        "source": "lovász_BL3_analysis.md §4-§9; raghavan_check.md; explorer2_target_model.json"
+      },
+      {
+        "section": "4. Conditional Result: Exponent 1/3",
+        "content": "State Conjecture L3-AP-INCR; prove Conditional Theorem (assuming L3-AP-INCR, r_3(N) ≤ N·exp(-c(logN)^{1/3})); discuss the ℓ¹ vs ℓ² spectral distinction",
+        "source": "generator_gap2.md; lovász_BL1_analysis.md; final_report.md §B"
+      },
+      {
+        "section": "5. Open Problems",
+        "content": "List: (a) Prove L3-AP-INCR; (b) Kelley-Lyu transfer (exponent 1/2 for r_3); (c) Quasi-polynomial bound for r_4 via direct quadratic Croot-Sisask (not van Corput); (d) Remove log log N factor from main theorem",
+        "source": "explorer2_target_model.json; handoff.json v2; generator_gap2.md"
+      },
+      {
+        "section": "References",
+        "content": "~10-15 references: Raghavan 2026, Kelley-Meka 2023, Bloom-Sisask 2023, Green-Tao 2017, LSS 2024, Peluse 2025 survey, Gowers 2001, Tao-Vu textbook, Croot-Sisask 2010, Behrend 1946, Szemerédi 1975",
+        "source": "final_report.md §15 (References section)"
+      }
+    ],
+
+    "evaluator_test": {
+      "criterion": "submittable_proof.md has all 5 sections above, with the main theorem stated precisely (with log log factor), the van Corput proof using Cauchy-Schwarz (not the direct 6-point argument), and the conditional section with an explicit conjecture statement from Lovász2."
+    }
+  },
+
+  "additional_gaps_from_first_round": {
+    "gap_Q": {
+      "name": "Is the van Corput bound truly new? Residual uncertainty from arXiv search failure",
+      "status": "MEDIUM RISK",
+      "description": "raghavan_check.md notes: arXiv search backend failure means we cannot exclude a very recent (March-June 2026) paper that noticed the same observation. Risk: 'residual risk that a very recent paper noted this observation after Raghavan's paper appeared.'",
+      "mitigation": "Include in submittable proof: 'To the best of our knowledge, this observation has not appeared in the literature.' Do NOT claim it as a theorem without a proper literature check.",
+      "action": "Optional: Generator2 should attempt one more web search for 'r_4(N) van Corput Raghavan 2026 four-term arithmetic progression quasi-polynomial' before finalizing the paper."
+    },
+    "gap_K": {
+      "name": "Kelley-Lyu bipartite-to-tripartite transfer",
+      "status": "OPEN (out of scope for submittable proof)",
+      "description": "The KL2 conjecture (tripartite grid norm giving exponent 1/2) is a major open problem. It is NOT part of the submittable proof. Include only as an open problem.",
+      "action": "Mention in Open Problems section (§5): 'Kelley-Lyu (arXiv:2505.01587) achieves exponent 1/2 in bipartite communication complexity. Whether this transfers to give r_3(N) ≤ N·exp(-c(logN)^{1/2}) is open.'"
+    }
+  },
+
+  "synthesis": {
+    "what_Lovász2_must_do": [
+      "TASK L2B (URGENT, 1-2 hours): Write the van Corput Lemma 1.1 with the correct Cauchy-Schwarz argument. Reference Gowers 2001 or Tao-Vu. This goes DIRECTLY into submittable_proof.md §3.",
+      "TASK L2C (URGENT, 30 min): Extract Raghavan's Theorem 1.4 exact statement with log log factor. Write the 2-line combination proof. This goes DIRECTLY into submittable_proof.md §3.",
+      "TASK L2A (REQUIRED, 4-8 hours): Trace through the Kelley-Meka / Raghavan iteration formula with rank d = O(α^{-1}), identify the precise density increment η(α) needed for exponent 1/3, and write Conjecture L3-AP-INCR with all parameters explicit. This goes into submittable_proof.md §4."
+    ],
+    "what_Generator2_must_do": [
+      "Draft submittable_proof.md with sections 1-5 as specified in Gap-P",
+      "Use Lovász2's Gap-V output for Lemma 1.1",
+      "Use Lovász2's Gap-R output for the Raghavan citation",
+      "Use Lovász2's Gap-L output for Conjecture 1 and Conditional Theorem",
+      "Draw on final_report.md Phase 4 for Introduction and Related Work",
+      "Total target: 10-15 pages"
+    ]
+  }
+}

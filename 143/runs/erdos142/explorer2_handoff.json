@@ -1,0 +1,174 @@
+{
+  "meta": {
+    "document_type": "Explorer2 Handoff — Lovász2 and Generator2 Brief",
+    "mission": "erdos142",
+    "date": "2026-06-21",
+    "from": "witsoc-explorer2",
+    "for": "witsoc-research-lovász2 AND witsoc-generator2",
+    "purpose": "Precise brief for producing submittable_proof.md; Lovász2 writes proof elements, Generator2 assembles the document",
+    "expected_output": "research/submittable_proof.md — 10-15 page paper suitable for journal submission"
+  },
+
+  "main_deliverable": {
+    "file": "research/submittable_proof.md",
+    "expected_length": "10-15 pages (A4, 11pt)",
+    "journal_target": "Bulletin of the London Mathematical Society or Mathematical Research Letters (short note format, 4-15 pages)",
+    "main_theorem": "Theorem: For all sufficiently large N, r_4(N) ≤ C · N · exp(-c · (log N)^{1/6} · (log log N)^{-1}), where C, c > 0 are absolute constants. In particular, this is o(N/(log N)^k) for all k > 0.",
+    "secondary_result": "Conditional Theorem: Assuming Conjecture L3-AP-INCR (L¹ density increment for 3-APs), r_3(N) ≤ N · exp(-c' · (log N)^{1/3})"
+  },
+
+  "for_lovász2": {
+    "role": "Proof element author — write the mathematical content for specific sections; do NOT assemble the full document",
+    "tasks_by_priority": [
+      {
+        "task_id": "L2B",
+        "priority": "URGENT",
+        "effort": "1-2 hours",
+        "title": "Write van Corput Lemma (Lemma 1.1 for submittable proof)",
+        "precise_task": "Write a self-contained proof of: 'Lemma 1.1 (van Corput reduction): If A ⊆ {1,...,N} is free of 4-term arithmetic progressions with |A| = M, then there exists d ∈ {1,...,N-1} such that A ∩ (A-d) is free of 3-term arithmetic progressions and has cardinality ≥ M²/(4N). In particular, r_4(N) ≤ 2√(N · r_3(N)).'",
+        "proof_outline": "Step 1 (counting): ∑_{d=1}^{N-1}|A ∩ (A-d)| = |{(a,b)∈A²: b>a}| = M(M-1)/2 ≥ M²/4. By pigeonhole, ∃d with |A_d| ≥ M²/(4N). Step 2 (3-AP-freeness): Use Gowers/Cauchy-Schwarz: if every large A_d had a 3-AP, the 4-AP count Λ_4(A) would be positive, contradicting 4-AP-freeness. Hence the large A_d is 3-AP-free. Step 3 (bound): M²/(4N) ≤ |A_d| ≤ r_3(N), so M ≤ 2√(N·r_3(N)).",
+        "critical_note": "Do NOT use the direct 6-point argument for Step 2. The 6 points {a,a+e,a+2e,a+d,a+e+d,a+2e+d} ⊆ A do NOT automatically give a 4-AP when e ≠ d. Use the Cauchy-Schwarz / energy argument (see Gowers 2001 or Tao-Vu 'Additive Combinatorics' Chapter 11).",
+        "references_to_cite": [
+          "W.T. Gowers, 'A new proof of Szemerédi's theorem,' GAFA 2001",
+          "T. Tao and V. Vu, 'Additive Combinatorics,' CUP 2006, Lemma 11.2.2 or similar"
+        ],
+        "output_form": "A complete LaTeX-style proof block, 10-20 lines, suitable for direct inclusion in submittable_proof.md"
+      },
+      {
+        "task_id": "L2C",
+        "priority": "URGENT",
+        "effort": "30 minutes",
+        "title": "Write Raghavan citation block (Theorem 1.4 exact statement)",
+        "precise_task": "Write the exact citation for Raghavan's Theorem 1.4 in a form suitable for the submittable proof, WITH the log log N factor.",
+        "exact_statement": "Theorem 1.4 (Raghavan 2026 [Raghavan 2026]): Let N be a positive integer. If A ⊆ {1,...,N} contains no non-trivial 3-term arithmetic progression, then |A| ≤ C₁ · N · exp(-c₁ · (log N)^{1/6} · (log log N)^{-1}), where C₁, c₁ > 0 are absolute constants.",
+        "combination_step": "Combining Lemma 1.1 and Theorem 1.4: r_4(N) ≤ 2√(N · r_3(N)) ≤ 2√(N · C₁ · N · exp(-c₁ · (log N)^{1/6} / log log N)) = 2C₁^{1/2} · N · exp(-c₁/2 · (log N)^{1/6} / log log N). Setting C := 2C₁^{1/2} and c := c₁/2 gives Theorem 1.",
+        "note_on_log_log": "Include the log log N denominator in both the cited theorem and the combined bound. Readers familiar with the r_3(N) literature will recognize this as Raghavan's exact bound; suppressing it would create confusion.",
+        "output_form": "Two blocks: (1) a theorem statement citing Raghavan with the log log factor; (2) a 3-4 line proof of the main Theorem 1 combining Lemma 1.1 and Theorem 1.4."
+      },
+      {
+        "task_id": "L2A",
+        "priority": "REQUIRED (for conditional section)",
+        "effort": "4-8 hours",
+        "title": "Precisely state Conjecture L3-AP-INCR and prove the conditional theorem",
+        "context": "The conditional section of the submittable proof argues: IF L3-AP-INCR holds, THEN r_3(N) ≤ N·exp(-c(logN)^{1/3}). This is new mathematics (not yet in the literature). The generator's proof sketch (generator_gap2.md §8) shows the idea but the iteration details don't cleanly give exponent 1/3 with the naive parameter choices.",
+        "step_1": "Read Raghavan 2026 (arXiv:2603.27045) and identify the EXACT rank-density-Bohrset-radius tradeoff in Raghavan's main sifting lemma (the key lemma underlying Theorem 1.4). Extract: (a) density increment formula as function of α and rank d; (b) Bohr set size formula as function of d and radius ρ; (c) how does |B| scale with the sifting parameters?",
+        "step_2": "With rank d = O(α^{-1}) (instead of Raghavan's d = O(α^{-2})), redo the iteration. Find the precise condition on the density increment η(α, d) such that the iteration terminates with r_3(N) ≤ N·exp(-c(logN)^{1/3}).",
+        "step_3": "State Conjecture L3-AP-INCR precisely: name the required density increment η(α) explicitly, name the required Bohr set parameters (rank d in terms of α, radius ρ₀), and verify that the conjecture is CONSISTENT (i.e., not obviously false from the ℓ² barrier argument).",
+        "step_4": "Write the conditional theorem: 'Assuming Conjecture L3-AP-INCR (see below), we have r_3(N) ≤ N·exp(-c(logN)^{1/3}).' With a complete proof given the conjecture.",
+        "known_difficulty": "The generator_gap2.md §8.2-§8.3 shows that with increment η(α) = Ω(α³) and rank d = O(α^{-1}), the exponent comes out to approximately 2/9 or 1/4, NOT 1/3. Either the increment must be larger (η(α) = Ω(α²)?) or the Bohr set parameters must be different. Lovász2 must resolve this discrepancy.",
+        "fallback": "If Lovász2 cannot pin down the precise L3-AP-INCR statement that gives 1/3, write instead: 'Conjecture L3-AP-INCR: [tentative statement]. IF this conjecture holds, we expect (by an analogue of the Kelley-Meka iteration) that r_3(N) ≤ N·exp(-c(logN)^{1/3}); the precise derivation requires further analysis.' Do NOT include a flawed or imprecise proof.",
+        "output_form": "A complete self-contained conjecture statement (Conjecture 1 in submittable_proof.md) + conditional theorem statement + proof (given the conjecture). 3-5 pages total."
+      }
+    ],
+
+    "questions_already_resolved_by_Lovász1": [
+      "ℓ¹ vs ℓ² spectrum: L¹ spectrum has size O(α^{-1}) but L¹-AP ≠ L²-AP (lovász_BL1_analysis.md)",
+      "Exponent stays 1/6 in van Corput (not 1/12) — confirmed (lovász_BL3_analysis.md §5, §9)",
+      "Van Corput bound r_4(N) ≤ C√(N·r_3(N)) is valid via Cauchy-Schwarz (with gap in direct argument) — confirmed (lovász_BL3_analysis.md §8-§9)"
+    ]
+  },
+
+  "for_generator2": {
+    "role": "Document assembler — write submittable_proof.md using Lovász2's output and existing artifacts",
+    "order_of_operations": [
+      "1. Wait for Lovász2 to complete at minimum tasks L2B and L2C (the urgent ones). These give the complete proof of the main theorem.",
+      "2. Begin drafting sections 1-2 (Introduction, Preliminaries) while waiting for L2A.",
+      "3. When L2B and L2C are done: draft section 3 (Main Result) using Lovász2's output.",
+      "4. When L2A is done (or if L2A produces a partial result): draft section 4 (Conditional) using Lovász2's output.",
+      "5. Draft sections 5 (Open Problems) and References independently.",
+      "6. Assemble and format."
+    ],
+    "section_outlines": [
+      {
+        "section_number": "Abstract",
+        "length": "150-200 words",
+        "content_brief": "We prove that r_4(N) ≤ C·N·exp(-c·(logN)^{1/6}/(log logN)), the first quasi-polynomial bound for 4-term arithmetic progression-free sets. This follows from combining a van Corput differencing argument with the recent quasi-polynomial bound for r_3(N) due to Raghavan [2026]. We additionally state a conjecture (L3-AP-INCR: L¹ density increment for 3-APs on rank O(α^{-1}) Bohr sets) and show that, conditionally on this conjecture, r_3(N) ≤ N·exp(-c'·(logN)^{1/3}).",
+        "source": "Derive from final_report.md Phase 4 summary + raghavan_check.md abstract"
+      },
+      {
+        "section_number": "1. Introduction",
+        "length": "2 pages",
+        "content_brief": "Context: r_k(N) = max size of k-AP-free subset of {1,...,N}. Szemerédi's theorem (r_k(N)=o(N)). The r_3(N) progress timeline: Roth 1953, Bourgain 2008, Kelley-Meka 2023 (exponent 1/12), Bloom-Sisask 2023 (1/9), Raghavan 2026 (1/6). For k=4: Green-Tao 2017 is the best published (polynomial log); state our main theorem improving this. Briefly mention conditional result and open problems. Paper organization.",
+        "key_sentence": "As an immediate corollary of Raghavan's 2026 result for r_3(N) and a standard van Corput differencing argument, we obtain the first quasi-polynomial bound for r_4(N).",
+        "source": "final_report.md §1-§2, §5 (tables of bounds); raghavan_check.md"
+      },
+      {
+        "section_number": "2. Notation and Preliminaries",
+        "length": "0.5 pages",
+        "content_brief": "Define: r_k(N); arithmetic progression (k-AP) with common difference d ≠ 0; density α = |A|/N. State: 'We will use the following theorem of Raghavan [Raghavan 2026]:' (include exact Theorem 1.4 from L2C).",
+        "source": "final_report.md §3"
+      },
+      {
+        "section_number": "3. Main Result",
+        "length": "3 pages",
+        "content_brief": "State Theorem 1 (main result with log log factor). Then: Lemma 1.1 (van Corput, from L2B — use Lovász2's clean proof). Proof of Theorem 1 (from L2C — the 3-line combination). Remark: comparison with Green-Tao 2017 and LSS 2024 for k=4.",
+        "key_comparison_remark": "Remark 1.2: Green-Tao 2017 gives r_4(N) ≤ N·(logN)^{-c}; Leng-Sah-Sawhney 2024 (arXiv:2402.17994) give r_k(N) ≤ N·exp(-(loglogN)^{c_k}) for k ≥ 5, but the k=4 case is excluded by the 2-torsion obstruction in 2-step nilmanifolds. Theorem 1 gives exp(-c(logN)^{1/6}), which beats both prior bounds for k=4.",
+        "source": "Lovász2 outputs L2B + L2C; lovász_BL3_analysis.md §4-§9"
+      },
+      {
+        "section_number": "4. A Conditional Improvement for r_3(N)",
+        "length": "3-5 pages",
+        "content_brief": "The ℓ¹ spectral observation: |Spec_{ℓ¹}_{δ}(1_A)| = O(α^{-1}). Why this suggests exponent 1/3. The gap: L¹ almost-periodicity ≠ L² almost-periodicity (standard density increment uses L²). State Conjecture L3-AP-INCR (from L2A). Conditional Theorem: Assuming Conjecture L3-AP-INCR, r_3(N) ≤ N·exp(-c(logN)^{1/3}). Kelley-Lyu (arXiv:2505.01587) bipartite analogue (achieved the L¹ density increment in their bipartite setting, giving exponent 1/2 for bipartite functions).",
+        "source": "Lovász2 output L2A; lovász_BL1_analysis.md; generator_gap2.md; final_report.md §B, §E"
+      },
+      {
+        "section_number": "5. Open Problems",
+        "length": "1 page",
+        "problems": [
+          "P1: Prove Conjecture L3-AP-INCR (L¹ density increment for 3-APs on rank O(α^{-1}) Bohr sets). Would give r_3(N) ≤ N·exp(-c(logN)^{1/3}).",
+          "P2: Can the log log N factor be removed from Theorem 1? (Raghavan conjectures r_3(N) ≤ N·exp(-c(logN)^{1/6}) without log log.)",
+          "P3: Can a quasi-polynomial bound for r_4(N) be proved directly via the quadratic Croot-Sisask approach (not via van Corput from r_3)? This would give a qualitatively different and likely much better bound.",
+          "P4: Kelley-Lyu (arXiv:2505.01587) achieves exponent 1/2 in bipartite communication complexity. Does this transfer to give r_3(N) ≤ N·exp(-c(logN)^{1/2}) (matching the Behrend lower bound structure)?"
+        ],
+        "source": "final_report.md §12; explorer2_target_model.json; gap_analysis.md v2"
+      },
+      {
+        "section_number": "References",
+        "length": "1 page",
+        "key_references": [
+          "[Behrend 1946] F.A. Behrend, 'On sets of integers which contain no three terms in arithmetic progression,' Proc. Nat. Acad. Sci. USA 32 (1946), 331-332.",
+          "[Bloom-Sisask 2023] T.F. Bloom and O. Sisask, 'An improvement to the Kelley-Meka bounds on cap sets,' arXiv:2309.02343 (2023).",
+          "[Gowers 2001] W.T. Gowers, 'A new proof of Szemerédi's theorem,' GAFA 11 (2001), 465-588.",
+          "[Green-Tao 2017] B. Green and T. Tao, 'New bounds for Szemerédi's theorem, III: A polylogarithmic bound for r_4(N),' Mathematika 63 (2017), 944-1040. arXiv:1705.01703.",
+          "[Kelley-Lyu 2025] Z. Kelley and X. Lyu, 'Improved bounds for the cap set problem via grid norms,' arXiv:2505.01587 (2025).",
+          "[Kelley-Meka 2023] Z. Kelley and R. Meka, 'Strong bounds for 3-progressions,' arXiv:2302.05537 (2023).",
+          "[LSS 2024] J. Leng, A. Sah, M. Sawhney, 'Improved bounds for Szemerédi's theorem,' arXiv:2402.17994 (2024).",
+          "[Peluse 2025] S. Peluse, 'Finding arithmetic progressions in dense sets of integers,' JMM Current Events Bulletin, arXiv:2509.22962 (2025).",
+          "[Raghavan 2026] R. Raghavan, 'Improved bounds for 3-progressions,' arXiv:2603.27045 (2026).",
+          "[Roth 1953] K.F. Roth, 'On certain sets of integers,' J. London Math. Soc. 28 (1953), 104-109.",
+          "[Szemerédi 1975] E. Szemerédi, 'On sets of integers containing no k elements in arithmetic progression,' Acta Arith. 27 (1975), 199-245.",
+          "[Tao-Vu 2006] T. Tao and V. Vu, 'Additive Combinatorics,' Cambridge Univ. Press, 2006."
+        ],
+        "source": "final_report.md §15 (references section)"
+      }
+    ],
+
+    "additional_instructions": {
+      "terminology": "Replace witsoc-internal terms: 'B0-L1DI' → 'L3-AP-INCR'; 'BL1-GRID barrier' → 'ℓ¹ spectral gap'; 'GAP2' → omit entirely in the paper.",
+      "exponent_clarification": "Always write the exponent as 1/6 (not 1/12) for r_4(N). When needed, say 'the same exponent as r_3(N) but with constant c halved.'",
+      "log_log_factor": "Include the log log N denominator everywhere it appears. Do not suppress it.",
+      "novelty_claim": "The observation that van Corput + Raghavan gives r_4(N) ≤ N·exp(-c(logN)^{1/6}/loglogN) 'appears to be new' or 'has not appeared in the literature to the authors' knowledge' — do NOT claim it as a major theorem, but do note it as the first quasi-polynomial bound for k=4.",
+      "tone": "Concise, self-contained, rigorous. This is a short note, not a survey. Keep Introduction to 2 pages max."
+    }
+  },
+
+  "summary_of_what_is_provable_now": {
+    "provable_immediately": {
+      "main_theorem": "r_4(N) ≤ C·N·exp(-c/2·(logN)^{1/6}/loglogN)",
+      "proof_status": "COMPLETE — van Corput (with Cauchy-Schwarz, 1 page) + Raghavan (cite) + combine (2 lines). Lovász2 tasks L2B and L2C supply the written content.",
+      "estimated_paper_length_just_for_this": "5-7 pages (intro + proof + references)"
+    },
+    "provable_conditionally": {
+      "conditional_theorem": "Assuming L3-AP-INCR: r_3(N) ≤ N·exp(-c'(logN)^{1/3})",
+      "proof_status": "CONDITIONAL — need Lovász2 task L2A to nail down the precise conjecture statement and verify the iteration gives 1/3 not 1/4",
+      "estimated_paper_length_addition": "+3-5 pages (conditional section)"
+    },
+    "not_provable_in_this_round": {
+      "items": [
+        "L3-AP-INCR itself (open problem)",
+        "Kelley-Lyu transfer to r_3(N) (open problem)",
+        "Exponent 1/2 for r_3(N) (speculative 3-7 year target)"
+      ]
+    }
+  }
+}

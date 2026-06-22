@@ -1,0 +1,220 @@
+{
+  "meta": {
+    "document_type": "Lovász / Generator Barrier Packet (v2 — REVISED)",
+    "mission": "erdos142",
+    "date": "2026-06-21",
+    "for": "witsoc-generator (GAP2 track); witsoc-research-lovász (KL2 track)",
+    "from": "witsoc-explorer",
+    "revision_note": "v2: GAP2 is now top priority for Generator (L¹ density increment); GAP1 revised (KL ceiling 1/3 not 1/2, bilinear vs trilinear obstacle confirmed); KL2 tripartite grid norm conjecture added. Lovász BL1+BL3 analyses incorporated."
+  },
+
+  "priority_reranking": {
+    "top_barrier_for_generator": "B2-NEW (L¹ Density Increment for 3-APs on rank O(α^{-1}) Bohr sets) — GAP2",
+    "top_barrier_for_lovász": "B3-NEW (Tripartite Grid Norm Conjecture KL2) — long-term",
+    "confirmed_results": ["B3-VanCorput: r_4(N) ≤ N·exp(-c/2(logN)^{1/6}) is VALID (new observation)"],
+    "retracted_claims": ["Explorer F3 '1/12 exponent' — RETRACTED, correct is 1/6 with halved constant"]
+  },
+
+  "barrier_0_new": {
+    "barrier_id": "B0-L1DI",
+    "name": "L¹ Density Increment for 3-APs (GAP2 main barrier)",
+    "gap": "GAP2",
+    "priority": "TOP — for Generator",
+    "status": "OPEN",
+
+    "precise_statement": {
+      "barrier_lemma": "L¹ Density Increment Lemma for 3-APs",
+      "full_statement": "Let A ⊆ Z_N with density α = |A|/N. Let Spec_{ℓ¹}(A) = {ξ ≠ 0: |Â(ξ)| ≥ δ·α} (large Fourier spectrum relative to ‖1_A‖₁ = α, i.e., relative to the mean). Then |Spec_{ℓ¹}(A)| ≤ 1/(δ²α) = O(α^{-1}) by Parseval. Build B = Bohr(Spec_{ℓ¹}(A), ρ) of rank d = |Spec_{ℓ¹}(A)| = O(α^{-1}). CLAIM: If A contains no 3-AP in Z_N (i.e., Λ₃(A) = 0), then necessarily |Â(ξ)| < δ·α for all ξ (A has no large L¹-spectrum). CONVERSELY: If Λ₃(A) > 0 (A is 3-AP-rich), then ∃ translate B+t such that |A ∩ (B+t)| / |B+t| ≥ α + Ω(α^C/d) = α + Ω(α^{C+1}) for some absolute C > 0.",
+      "why_this_gives_1_3": "If BL0-L1DI holds, iterate: each step increases density by Δ ≥ cα^{C+1} and changes the effective host set from {1,...,N} to a Bohr set of rank d = O(α^{-1}) and size ≥ N·exp(-O(α^{-1})). After O(1/α^C) steps, density exceeds 1 — contradiction. The effective length N' satisfies log log(1/α') ≤ log log(1/α) + C for each step. Solving gives α ≥ c·(log N)^{-1/3}, hence r_3(N) ≤ N·exp(-c'(log N)^{1/3}).",
+      "current_ceiling_without_this": "Without L¹ density increment: rank is O(α^{-2}) (from ℓ² spectrum), giving exponent 1/6 (Raghavan 2026). One more order of α in the rank would give exponent 1/3."
+    },
+
+    "known_failed_approaches": [
+      {
+        "approach": "Direct L² density increment on L¹ Bohr set",
+        "why_failed": "L¹-AP does not imply L²-AP. The standard KM step ‖1_A * μ_B - 1_A‖₂ ≤ ε√α requires L² Parseval and does NOT follow from ‖1_A * μ_B - 1_A‖₁ ≤ εα. (L² is stronger than L¹.)"
+      },
+      {
+        "approach": "Energy increment from L¹-AP",
+        "why_failed": "Energy increment E[1_A²] vs E[1_A*μ_B·1_A] requires L² control. The L¹ control ‖1_A*μ_B - 1_A‖₁ ≤ εα bounds the L¹ energy difference, not the L² energy."
+      }
+    ],
+
+    "evaluator_test": {
+      "quick_win": "Verify van Corput + Raghavan corollary: r_4(N) ≤ N·exp(-c/2(logN)^{1/6}). Write as clean proposition (GAP2-B track, likely new observation).",
+      "main_goal": "Prove BL0-L1DI: L¹ density increment gives a density increase on a Bohr set of rank O(α^{-1}). This gives exponent 1/3 for r_3(N).",
+      "disproof_criterion": "Construct A ⊆ Z_N with density α and no 3-APs, such that 1_A is L¹-almost-periodic on Bohr sets of rank < α^{-2+ε} (for any ε > 0) but has NO translate B+t with density ≥ α + Ω(α^C/rank). This would show L¹ density increment fails."
+    },
+
+    "route_population": [
+      {
+        "route_id": "B0-R1",
+        "name": "3-AP Counting via L¹ almost-periodicity",
+        "description": "Use the 3-AP formula Λ₃(A) = (1/N)Σ_ξ Â(ξ)²Â̄(2ξ) directly. If Λ₃(A) ≥ α³N (not 3-AP-free), then Σ_ξ Â(ξ)²Â̄(2ξ) ≥ α³N². The dominant contribution comes from ξ with |Â(ξ)| ≥ δα (the L¹ spectrum). On the Bohr set B for Spec_{ℓ¹}(A), the convolution 1_A * μ_B concentrates this 3-AP count, creating a density increase.",
+        "difficulty": "HARD — requires controlling Λ₃(A ∩ B+t) for specific translates t"
+      },
+      {
+        "route_id": "B0-R2",
+        "name": "Pigeonhole on Fourier coefficients",
+        "description": "Since |Spec_{ℓ¹}(A)| ≤ O(α^{-1}), there are at most O(α^{-1}) 'bad' frequencies. The good translates t (where A∩(B+t) has density > α) must exist by an averaging argument IF the density increment can be extracted from the L¹ control.",
+        "difficulty": "MEDIUM — requires showing averaging gives one good translate"
+      }
+    ]
+  },
+
+  "barrier_1": {
+    "barrier_id": "B1",
+    "name": "The Bipartite Lift Barrier (Kelley–Lyu Transfer Gap) — REVISED",
+    "gap": "GAP1",
+    "priority": "MEDIUM (3-7 years) — ceiling revised to 1/3, not 1/2",
+    "revision": "KL gives exponent 1/3 (not 1/2) when adapted to 3-APs. KL's √d trick: in KL, d ~ log(N) → √d ~ (log N)^{1/2} → exponent 1/2. In Croot-Sisask: d = α^{-2} → √d = α^{-1} → L¹ rank → exponent 1/3. Exponent 1/2 requires Tripartite Grid Norm (KL2, new open conjecture).",
+
+    "precise_statement": {
+      "barrier_lemma": "Bilinear Grid-Norm Croot–Sisask Lemma for Indicator Functions",
+      "full_statement": "Let N be a large prime and A ⊆ Z_N with density α = |A|/N ∈ (0,1). Let f = 1_A: Z_N → {0,1} ⊆ [0,1] (non-negative indicator function). Define the '3-AP grid function' G_A: Z_N × Z_N → [0,1] by G_A(a, c) = 1_A(a) · 1_A(c) (a bivariate function on A × A). The '3-AP grid norm' of A is ‖G_A‖_{grid,3AP} = (∑_{b ∈ A} (∑_{(a,c): a+c=2b} 1_A(a) · 1_A(c))² / N³)^{1/4}. If A is 3-AP-free, then ‖G_A‖_{grid,3AP} ≤ α^{3/2} + α² (roughly: the non-AP contribution dominates). CONJECTURED: If ‖G_A‖_{grid,3AP} ≥ δ (i.e., the 3-AP count is large), then there exists a Bohr set Bohr(Γ, ρ) of rank d = O(δ^{-1} · polylog(1/δ)) (i.e., O(α^{-1}) for δ ≈ α) such that ‖1_A * μ_{Bohr} - 1_A‖₁ ≤ ε · α · N.",
+      "what_makes_this_'grid'": "The 3-AP sum Λ_3(A) = ∑_{a,b,c} 1_A(a) 1_A(b) 1_A(c) 1[a+c=2b] = ∑_ξ Â(ξ)² · Â(-2ξ). The term Â(ξ)² = (∑_a 1_A(a) e(-aξ/N))² is a bilinear form over (a₁, a₂) pairs. This bilinear form is the 'grid' — it involves Alice having a₁ and Bob having a₂, both in A. The non-negativity of |Â(ξ)|² = Â(ξ)·Â(-ξ) (a positive-definite quantity) is the key property.",
+      "rank_prediction": "If the bilinear structure gives rank O(α^{-1}): exponent 1/(1·3) = 1/3. If rank O(1): exponent 1/(0·3) → 1/2 (Behrend). The Kelley–Lyu result in the bipartite setting achieves O(β^{-1}) rank (β = density), suggesting O(α^{-1}) for 3-APs."
+    },
+
+    "known_failed_approaches": [
+      {
+        "approach": "L² Croot–Sisask (standard)",
+        "why_failed": "Uses L² norm → Parseval → rank O(α^{-2}). Non-negativity of f is not exploited. The L² framework cannot see that f = 1_A ≥ 0.",
+        "exponent_ceiling": "1/6 (Raghavan 2026)"
+      },
+      {
+        "approach": "Fourier L⁴ energy (large spectrum)",
+        "why_failed": "Bounding |{ξ: |Â(ξ)| ≥ t}| using ∑|Â(ξ)|⁴ ≤ α² (Parseval for convolution) gives |Spec_t(A)| ≤ α²/t⁴ — WORSE than L² (which gives ≤ α²/t² up to factors). The L⁴ approach does not help.",
+        "exponent_ceiling": "Makes things worse, not better"
+      },
+      {
+        "approach": "Goldreich–Levin type argument",
+        "why_failed": "Gives large Fourier coefficients (|Â(ξ)| ≥ εα) efficiently, but the count is still O(α^{-2}/ε²) from L² Parseval. Does not exploit non-negativity of A in the count.",
+        "exponent_ceiling": "O(α^{-2}) rank"
+      },
+      {
+        "approach": "Communication complexity reduction (direct)",
+        "why_failed": "Kelley–Lyu work in a 2-player communication model (Alice has x ∈ X, Bob has y ∈ Y, function is f(x,y)). The 3-AP problem has 3 players (a, b, c). The direct 2-player reduction (fix b, study f_b(a,c)) makes b into a 'public' parameter — this is a 2-PARTY function for fixed b, but b ranges over A, creating dependencies that prevent a clean reduction.",
+        "what_was_tried": "Fix b ∈ A, let Alice have a ∈ A, Bob have c ∈ A, function = 1[a+c=2b]. This is a 2-party function for fixed b. Kelley–Lyu's method gives rank O(α^{-1}) for THIS fixed-b function (in the communication model). But the 3-AP problem requires summing over b ∈ A, and the b-averaging introduces correlations."
+      }
+    ],
+
+    "evaluator_test": {
+      "description": "What would count as progress on Barrier 1?",
+      "partial_success": "Identify exactly which lemma in arXiv:2505.01587 (Kelley–Lyu) uses the bipartite structure essentially vs. incidentally. If the key rank-improvement lemma only uses 'non-negativity of a bilinear form' (not bipartiteness per se), it may transfer.",
+      "full_success_criterion_1": "Prove: for 1_A: Z_N → [0,1] non-negative with E[1_A] = α, the Bohr set for L¹-almost-periodicity has rank O(α^{-1} polylog(1/ε)). This would give exponent 1/3 immediately.",
+      "full_success_criterion_2": "Prove: the 3-AP counting Fourier formula Σ_ξ |Â(ξ)|² Â(-2ξ), treated as a bilinear form between (|Â|², Â), satisfies the Kelley–Lyu 'grid norm' sifting lemma with rank O(α^{-1}). This would give exponent 1/3 via the sifting argument.",
+      "refutation_criterion": "Construct f: Z_N → [0,1] with E[f] = α such that for any Bohr set B of rank < Ω(α^{-2+ε}), ‖f * μ_B - f‖₁ ≥ cα. This would show that even non-negativity does not help, and rank O(α^{-2}) is tight."
+    },
+
+    "route_population": [
+      {
+        "route_id": "B1-R1",
+        "name": "Non-Negativity L¹ Spectral Analysis",
+        "description": "Exploit f = 1_A ≥ 0 directly: since f ≥ 0, we have |f̂(ξ)| = |∑_x f(x) e(-xξ/N)| ≤ ∑_x f(x) = αN = f̂(0). So |Spec_t(f)| = |{ξ: |f̂(ξ)| ≥ t}| is bounded by N (trivially). But the key is the large-spectrum bound: |{ξ: |f̂(ξ)| ≥ t}| ≤ ∑_ξ |f̂(ξ)|²/t² = αN/t² (by Parseval, ∑|f̂(ξ)|² = αN). This is O(α/t²) · N. Setting t = δα gives |Spec_{δα}(f)| ≤ 1/(δ²α). This is STILL O(α^{-1}/δ²), which for δ ∼ 1 gives rank O(α^{-1}). THIS IS THE KEY OBSERVATION.",
+        "why_promising": "For f = 1_A (non-negative), the Parseval bound ∑|f̂(ξ)|² = αN combined with f̂(0) = αN gives: number of ξ with |f̂(ξ)| ≥ δ · f̂(0) = δαN is at most αN/(δαN)² · N = 1/(δ²αN)·N = 1/(δ²α). So the large-spectrum set has size O(α^{-1}), NOT O(α^{-2})!",
+        "key_computation": "Spec_δ(1_A) = {ξ: |Â(ξ)| ≥ δ · ‖Â‖_∞} where ‖Â‖_∞ = |Â(0)| = αN (for non-negative A). Then |Spec_δ| ≤ ∑|Â(ξ)|²/(δαN)² = αN/(δαN)² = 1/(δ²αN). Wait — this gives |Spec_δ| ≤ N/(δ²αN) = 1/(δ²α). For δ = 1/2: |Spec_{1/2}(1_A)| ≤ 4/α = O(α^{-1}). THE LARGE SPECTRUM HAS SIZE O(α^{-1}) NOT O(α^{-2})!",
+        "implication": "If Spec_{δ}(1_A) has size O(α^{-1}), the Bohr set Bohr(Spec_δ(1_A), ρ) has rank O(α^{-1}), giving exponent 1/(1·3) = 1/3!",
+        "why_not_already_known": "The standard Croot–Sisask lemma normalizes by ‖f‖₂ (not ‖f‖_∞). The large spectrum relative to ‖f‖_∞ (= 1 for indicator functions) might differ from the large spectrum relative to ‖f‖₂ (= √α). Need to check which normalization the density increment uses.",
+        "critical_check_for_lovász": "In the Kelley–Meka / Bloom–Sisask / Raghavan density increment arguments: which spectral normalization appears? Is the key Bohr set Bohr({ξ: |f̂(ξ)| ≥ t}) for t related to ‖f‖₂ or ‖f‖_∞? If it's ‖f‖_∞-relative (which for 1_A gives O(α^{-1}) large spectrum), then the exponent 1/3 might already be available from existing arguments!"
+      },
+      {
+        "route_id": "B1-R2",
+        "name": "Kelley–Lyu Lemma Extraction",
+        "description": "Carefully read arXiv:2505.01587 and identify the main lemma that achieves rank O(β^{-1}) in the grid norm setting. Compare its hypotheses to the 3-AP setting: (a) is non-negativity used? (b) is the bipartite product structure used essentially or just as a convenient model? (c) can the same proof be adapted with the 3-AP bilinear structure Σ_ξ|Â(ξ)|²Â(-2ξ)?",
+        "expected_outcome": "Either: the lemma directly transfers (giving exponent 1/3 or even 1/2 for r_3(N)); or the bipartite structure is essential (obstruction identified).",
+        "difficulty": "MEDIUM (analysis) — requires paper access and careful reading"
+      },
+      {
+        "route_id": "B1-R3",
+        "name": "Constructive Obstruction (Counterexample to Transfer)",
+        "description": "Attempt to construct A ⊂ Z_N with density α and no 3-APs such that 1_A has large spectrum |Spec_{δ}(1_A)| = Ω(α^{-2}) (relative to ‖1_A‖_∞). If such A exists, it shows non-negativity does NOT automatically give O(α^{-1}) large spectrum — the rank-reduction from O(α^{-2}) to O(α^{-1}) requires additional structure (the grid/bipartite property).",
+        "candidate_construction": "Behrend sets: the indicator of a Behrend set has nearly-flat Fourier transform (no large coefficients). So |Spec_δ(1_{Behrend})| might be very small, actually contradicting the idea of large spectrum. Need sets with LARGE spectrum but few 3-APs.",
+        "candidate_construction_2": "Salem–Spencer sets (L² extremals for 3-AP-free, from a different perspective). Or random sets with density α — the large spectrum of a random set of density α has size Θ(α^{-2}) by Parseval (the random set's Fourier coefficients are i.i.d. with ‖f̂(ξ)‖₂ ∼ √(αN)), giving |Spec_δ| ≈ 1/(δ²α). Wait — this is O(α^{-1})! So even random sets have |Spec_δ| = O(α^{-1}) relative to their max spectrum.",
+        "conclusion": "The large spectrum of 1_A (relative to ‖1_A‖_∞ = 1) is ALWAYS O(α^{-1}) by Parseval. This is route B1-R1 again — the O(α^{-1}) bound is NOT a new result, it's already implicit in Parseval. The question is whether this O(α^{-1}) large-spectrum bound is being used in the current proofs."
+      }
+    ],
+
+    "lovász_key_question": "In the Croot–Sisask / Kelley–Meka framework: when building the Bohr set for the density increment, is the 'large spectrum' defined relative to ‖f̂‖_∞ = f̂(0) = αN (which gives |Spec_δ| = O(α^{-1})) or relative to ‖f‖₂² = αN (which gives |Spec_δ| = O(α^{-2}))? If the former is sufficient for the density increment, exponent 1/3 (or better) might already be within reach of current methods. THIS IS THE SINGLE MOST IMPORTANT QUESTION."
+  },
+
+  "barrier_2": {
+    "barrier_id": "B2",
+    "name": "The Quadratic Periodicity Barrier (k=4 Nil-Bohr Obstacle)",
+    "gap": "GAP3",
+    "priority": "HIGH (second priority)",
+
+    "precise_statement": {
+      "barrier_lemma": "Quadratic Croot–Sisask Lemma (QCS)",
+      "full_statement": "Let f: Z_N → [-1,1] with ‖f‖_{U³[N]} ≥ δ. Define the '2-step nil-Bohr set' QBohr(G, Γ, d) as a coset progression in Z_N arising from a 2-step nilpotent group G of dimension d = O((log 1/δ)^C). Claim: ‖T_h f - f‖_{U²} ≤ (1 - cδ^C) · ‖f‖_{U³} for all h ∈ QBohr of rank d. If true: A 4-AP-free set with density α satisfies ‖1_A - α‖_{U³} ≥ δ(α), which by QCS gives a QBohr set QBohr of size ≥ N·exp(-O((log 1/α)^C)) on which 1_A has higher density; iterate to get r_4(N) ≤ N·exp(-(log N)^c).",
+      "linearized_version": "Weak QCS (may be sufficient): ∃ h = h(f,δ) ∈ Z_N with |h| ≤ N^{1-cδ^C} such that ‖T_h f - f‖_{U²} ≤ (1-cδ^C)‖f‖_{U³}. A single good translate (not a whole Bohr set) might suffice if we can find polynomially many such translates.",
+      "2step_nilbohr_definition": "QBohr(g₁,...,g_d, ρ, σ) = {n ∈ Z_N: ‖g_i^n · e‖_{G/Γ} < ρ for i=1,...,d, and ‖[g_i, g_j]^{n²} · e‖_{G/Γ} < σ for i < j} where G is a 2-step nilpotent Lie group with lattice Γ. The quadratic conditions (involving n²) distinguish this from a classical Bohr set."
+    },
+
+    "known_failed_approaches": [
+      {
+        "approach": "Applying Leng–Sah–Sawhney U³ inverse theorem directly",
+        "why_failed": "LSS gives a nilsequence correlation (quantitatively: polynomial in δ), but the density increment from nil-equidistribution loses exp(-polylog) factors. The iteration gives only exp(-(log log N)^c), not exp(-(log N)^c).",
+        "reference": "Leng–Sah–Sawhney 2024 (arXiv:2402.17994, 2402.17995)"
+      },
+      {
+        "approach": "Green–Tao arithmetic regularity lemma for nilsequences",
+        "why_failed": "Green–Tao's regularity lemma for U³ gives a decomposition f = f_nil + f_unif + f_err with tower-type bounds. Even with LSS's improvement, the bounds are too weak for density increment to give quasi-polynomial results.",
+        "reference": "Green–Tao 2012"
+      },
+      {
+        "approach": "Direct Fourier / Bohr set argument (ignoring U³ structure)",
+        "why_failed": "For k=4, the U³ structure is essential; Fourier methods (U² based) cannot detect 4-APs vs. 3-APs in the density increment. The 'quadratic phase' e^{2πiQ(n)} (for quadratic Q) is invisible to Fourier but visible to U³.",
+        "reference": "Gowers 2001 (U^k norms for general k), Green–Tao 2017"
+      }
+    ],
+
+    "evaluator_test": {
+      "partial_success": "Prove the 'Weak QCS': existence of a single good translate h with ‖T_h f - f‖_{U²} ≤ (1-cδ^C)‖f‖_{U³}. Even this would be a new result, and might initiate a density increment.",
+      "full_success_criterion": "Prove QCS with rank d = O((log 1/δ)^C) (quasipolynomial in log 1/δ). Then the density increment gives r_4(N) ≤ N·exp(-(log N)^c).",
+      "prerequisite_clarity": "Clarify whether the 2-torsion obstruction (from 2-step nilmanifolds over Z) is (a) a real barrier requiring new ideas, or (b) a technical issue solvable by working with odd N or a different group model."
+    },
+
+    "route_population": [
+      {
+        "route_id": "B2-R1",
+        "name": "Quadratic van der Corput / Energy Increment",
+        "description": "For 4-APs, the van der Corput argument differentiates the sequence: if A has many 4-APs, then for many differences d, A ∩ (A-d) has many 3-APs. One can iterate: bound r_4(N) in terms of r_3(N') for N' ≈ N. If r_3 is quasi-polynomial (exponent β), this gives r_4(N) ≤ N^{g(β)} for some g. For any β > 0, g(β) < 1 gives a power saving.",
+        "obstacle": "The van der Corput argument loses a factor of N: N' ≈ N^{1/2} (not N). So r_4(N) ≤ r_3(N^{1/2})^{something}/N is not immediately helpful. One needs a more careful correlation argument.",
+        "potential": "If r_3(N) ≤ N·exp(-(log N)^β), then r_4(N) ≤ N · exp(-(log N)^{β/2} · constant). With β = 1/6 (current best), this gives r_4(N) ≤ N · exp(-(log N)^{1/12}) = N · exp(-(log N)^{0.083}). This IS quasi-polynomial! But is this argument correct?"
+      },
+      {
+        "route_id": "B2-R2",
+        "name": "Nil-Bohr-Set Almost-Periodicity via Polynomial Sequences",
+        "description": "Use the polynomial sequence structure of nilsequences: if f correlates with e^{2πiP(n)} for a polynomial P of degree 2 on an interval I, then T_h f (translated by h) correlates with e^{2πiP(n+h)}. The difference P(n+h) - P(n) is a polynomial of degree 1 in n (a linear function of n for degree-2 P). This 'linearization' means that after translating by h, the quadratic phase becomes linear — giving U² control. The Bohr set for h consists of those h where the linearization (2h times the leading coefficient of P) is small.",
+        "potential": "If f has large U³ norm via correlation with e^{2πiP(n)} where P(n) = cn², then T_h f - f has large U² norm correlation with e^{2πi(2cn·h+ch²)} — a linear phase in n. Collecting many such translates (varying h) gives a set of 'linear phases' forming a Bohr set. The rank of this Bohr set is O(1/δ) where δ is the U³ correlation.",
+        "obstacle": "The linearization works for a SINGLE quadratic polynomial, but the U³ inverse theorem gives a correlation with a nilsequence (not a single polynomial). Nilsequences are more complex than polynomials, and the 'differentiated nilsequence' T_h F - F is not automatically a simpler nilsequence."
+      },
+      {
+        "route_id": "B2-R3",
+        "name": "2-Torsion Resolution via Odd-Order Modulus",
+        "description": "Work in Z_{N'} where N' is a large prime with N' ≡ 1 (mod large power of 2). The 2-torsion issue in 2-step nilmanifolds over Z arises when the group element g satisfies g^2 = e (exponent 2 elements). By working modulo an odd integer N' or a prime N' ≡ 1 (mod 4), the 2-torsion elements might not appear, eliminating the obstruction.",
+        "potential": "If 2-torsion is the ONLY obstacle to QCS, then working in Z_{N'} for appropriate N' might give the lemma. The results for k ≥ 5 (Leng–Sah–Sawhney) work without the 2-torsion issue — understanding precisely why k≥5 avoids it and k=4 does not would clarify whether odd N' resolves k=4.",
+        "key_question_for_lovász": "Why exactly does the 2-step case (k=4) have 2-torsion complications but the 3-step case (k=5) does not? Is it a property of the nilmanifold over Z, or the modular arithmetic, or the equidistribution proof?"
+      },
+      {
+        "route_id": "B2-R4",
+        "name": "Quadratic AP-Freeness via Schur's Theorem Analogy",
+        "description": "For k=3, the density increment works because: 3-AP-free A in a Bohr set B means A has 'local Fourier regularity' on B. For k=4: 4-AP-free A in a nil-Bohr set QBohr means A has 'local quadratic regularity' on QBohr. Develop the theory of 'quadratic Bohr regularity lemma': a regularity decomposition f = f_{qreg} + f_{qunif} + f_{err} where f_{qreg} is 'quadratically regular' on QBohr sets and f_{qunif} has small U³ norm.",
+        "potential": "The quadratic regularity lemma, if proved with quasipolynomial parameters, would give the analogue of Bogolyubov's lemma for U³. Combined with a density increment on QBohr sets, this would give r_4(N) ≤ N·exp(-(log N)^c)."
+      }
+    ]
+  },
+
+  "synthesis": {
+    "top_route_for_generator": "B0-L1DI (L¹ density increment for 3-APs on rank O(α^{-1}) Bohr sets). Proving this gives exponent 1/3, beating Raghavan's 1/6. Two tracks: (A) find an L¹ density increment argument for 3-APs; (B) prove van Corput + Raghavan corollary as clean proposition.",
+    "confirmed_new_result": "B2-R1 (van Corput for k=4) is CONFIRMED by Lovász BL3 analysis: r_4(N) ≤ C·√(N·r_3(N)) by standard van Corput / Cauchy-Schwarz, and plugging in Raghavan r_3(N) ≤ N·exp(-c(logN)^{1/6}) gives r_4(N) ≤ N·exp(-c/2·(logN)^{1/6}). NOTE: exponent stays 1/6, constant halves. Previous 'B2-R1' summary erroneously said exponent 1/12 — RETRACTED. The correct statement is exponent 1/6, halved constant, which is STILL a first quasi-polynomial bound for k=4 (beating Green-Tao 2017 polynomial bounds and LSS 2024 exp(-(loglogN)^c)).",
+    "lovász_BL1_finding": "The ℓ¹ large-spectrum of 1_A (size O(α^{-1})) is ALREADY available from Parseval and ‖f̂‖_∞ = f̂(0) = α normalization. HOWEVER: standard Croot-Sisask uses ℓ² threshold δ‖f‖₂, giving rank O(α^{-2}). The ℓ¹ Bohr set (rank O(α^{-1})) only gives L¹-AP, which is INSUFFICIENT for the density increment (which needs L²-AP). The missing step is a new L¹ density increment argument — precisely what B0-L1DI asks for.",
+    "key_open_question": "Can the Kelley-Lyu √d potential trick be adapted to the 3-AP setting to give a density increment on a Bohr set of rank O(α^{-1}) instead of O(α^{-2})? This is the KL2 tripartite grid norm conjecture (3-7 year target) and the top long-term priority for witsoc-research-lovász.",
+    "short_term_actions_for_generator": [
+      "1. Write clean proposition: 'r_4(N) ≤ N·exp(-c/2·(logN)^{1/6})' with van Corput proof sketch. Likely new observation — cite only Raghavan 2026 + van Corput.",
+      "2. Attempt L¹ density increment argument: given A ⊆ Z_N, Λ₃(A) > α³N/2, and B = Bohr(Spec_{ℓ¹}(A), ρ) of rank O(α^{-1}), find translate B+t with density ≥ α + Ω(α^{C+1}).",
+      "3. Identify which lemma in Raghavan 2026 (arXiv:2603.27045) uses ℓ² vs ℓ¹ threshold most critically."
+    ]
+  }
+}

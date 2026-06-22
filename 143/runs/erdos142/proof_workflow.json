@@ -1,0 +1,66 @@
+{
+  "schema": "witsoc.proof_workflow.v1",
+  "advisory": true,
+  "run_dir": "/home/xeclipse/.openscientist/worktrees/c31ad1/runs/erdos142",
+  "target": "",
+  "target_hash": "",
+  "phase": "GENERATOR_READY",
+  "phase_index": 5,
+  "orchestrator_authority": "The orchestrator owns strategy, sequencing, fanout, budget, and creative reframing.",
+  "specialist_roles": {
+    "Explorer": "freeze target, rank routes, audit theorem preconditions, authorize Generator or Lovasz",
+    "Lovasz": "attack actual barriers, maintain proof-DAG/SOC memory, return reviewed products",
+    "Generator": "build/repair WIT and Lean artifacts, report checks and receipts without truth arbitration"
+  },
+  "artifacts": {
+    "handoff": "/home/xeclipse/.openscientist/worktrees/c31ad1/runs/erdos142/handoff.json",
+    "status_report": "/home/xeclipse/.openscientist/worktrees/c31ad1/runs/erdos142/reports/witsoc_status.md",
+    "witsoc_next_action": "/home/xeclipse/.openscientist/worktrees/c31ad1/runs/erdos142/witsoc_next_action.json"
+  },
+  "open_obligations": [
+    {
+      "owner": "Explorer",
+      "key": "freeze_target",
+      "why": "Write exact target, definitions, quantifiers, and target hash.",
+      "artifact": "handoff.json or target.md"
+    },
+    {
+      "owner": "Explorer",
+      "key": "strict_generator_blueprint",
+      "why": "Convert accepted result into exact Generator blueprint before WIT.",
+      "artifact": "handoff_v1.json"
+    },
+    {
+      "owner": "Generator",
+      "key": "emit_generator_packet",
+      "why": "Rank artifact and repair options before artifact work or final report.",
+      "artifact": "generator_decision_packet.json"
+    },
+    {
+      "owner": "Generator",
+      "key": "write_wit",
+      "why": "Create WIT from strict handoff or record a concrete blocker.",
+      "artifact": "proofs/*.wit or proofs/*_blocker.md"
+    },
+    {
+      "owner": "Generator",
+      "key": "score_formalization",
+      "why": "Score Lean/WIT feasibility and missing dependencies before claiming readiness.",
+      "artifact": "formalization_feasibility.json"
+    }
+  ],
+  "next_step": {
+    "owner": "Explorer",
+    "action": "freeze_target",
+    "reason": "Write exact target, definitions, quantifiers, and target hash.",
+    "expected_artifact": "handoff.json or target.md"
+  },
+  "workflow_gates": [
+    "freeze target before proving",
+    "falsify or stress-test before promoting",
+    "route open barriers through Lovasz before Generator",
+    "generate WIT before Lean",
+    "receipt/Lean/SafeVerify before VERIFIED",
+    "Explorer reviews Lovasz products before Generator"
+  ]
+}

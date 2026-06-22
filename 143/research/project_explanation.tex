@@ -1,0 +1,604 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+
+\hypersetup{hidelinks}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\calS}{\mathcal{S}}
+\newcommand{\rfour}{r_4}
+\newcommand{\rthree}{r_3}
+
+\title{A Partial Van Corput Reduction for Four-Term Progression-Free Sets}
+\author{Partial-results manuscript}
+\date{June 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let \(r_k(N)\) denote the maximum size of a subset of \(\{1,\ldots,N\}\) with no
+non-trivial \(k\)-term arithmetic progression.  We record a partial van
+Corput-type reduction from the \(k=4\) problem to the \(k=3\) problem.  For a
+4-term-progression-free set \(A\subseteq\{1,\ldots,N\}\), write
+\[
+  A_d=\{x\in A:x+d\in A\}.
+\]
+We prove that there is a popular difference \(d\) satisfying
+\[
+  |A_d|\geq |A|^2/(4N),
+\]
+and that such a fiber avoids 3-term progressions of step \(d\) and \(2d\).
+The missing ingredient for a full reduction is the assertion that some popular
+fiber is free of all 3-term progressions.  We isolate this as Conjecture 2.
+Assuming Conjecture 2, one obtains
+\[
+  r_4(N)\leq 2\sqrt{N r_3(N)}.
+\]
+Combining this conditional reduction with Raghavan's 2026 bound for \(r_3(N)\)
+would give a conditional quasi-polynomial upper bound for \(r_4(N)\).
+We also describe a \(2\times3\) grid reformulation of the gap, Lean 4
+formalization status, and computational evidence supporting the conjecture.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+For \(k\geq 2\), let \(r_k(N)\) be the largest size of a subset
+\[
+  A\subseteq \{1,\ldots,N\}
+\]
+containing no non-trivial \(k\)-term arithmetic progression.  Thus \(A\) is
+\(k\)-AP-free if it contains no set
+\[
+  \{a,a+d,\ldots,a+(k-1)d\}
+\]
+with \(d>0\).
+
+Szemerédi's theorem gives \(r_k(N)=o(N)\) for each fixed \(k\geq 3\), but the
+quantitative behavior remains difficult.  The \(k=3\) case has seen major
+recent progress.  The input used in this note is Raghavan's 2026 bound:
+\[
+  r_3(N)
+  \leq
+  C_1 N
+  \exp\!\left(
+    -c_1\frac{(\log N)^{1/6}}{\log\log N}
+  \right)
+\]
+for absolute constants \(C_1,c_1>0\) and all sufficiently large \(N\).
+
+For \(k=4\), the best unconditional published upper bounds are much weaker than
+this quasi-polynomial scale.  The purpose of this note is not to claim an
+unconditional improvement, but to isolate a precise combinatorial condition
+under which Raghavan's \(r_3(N)\) bound transfers to \(r_4(N)\).  The transfer
+rests on popular difference fibers.
+
+\section{Setup and Difference Fibers}
+
+Let
+\[
+  A\subseteq\{1,\ldots,N\},\qquad |A|=M.
+\]
+For \(1\leq d\leq N-1\), define the difference fiber
+\[
+  A_d=\{x\in A:x+d\in A\}.
+\]
+Equivalently, \(A_d=A\cap(A-d)\), written inside \(\{1,\ldots,N\}\).
+
+The first observation is a pigeonhole count.  It is elementary, but it is the
+starting point of the whole reduction.
+
+\begin{lemma}[Popular difference]
+\label{lem:popular}
+Let \(A\subseteq\{1,\ldots,N\}\) have size \(M\geq 2\).  Then there exists
+\(d\in\{1,\ldots,N-1\}\) such that
+\[
+  |A_d|\geq \frac{M^2}{4N}.
+\]
+\end{lemma}
+
+\begin{proof}
+Count ordered pairs \((a,b)\in A^2\) with \(a<b\).  Every such pair determines a
+unique positive difference \(d=b-a\), and contributes one element \(a\) to
+\(A_d\).  Therefore
+\[
+  \sum_{d=1}^{N-1}|A_d|
+  =
+  \binom{M}{2}
+  =
+  \frac{M(M-1)}{2}.
+\]
+Since \(M\geq 2\),
+\[
+  \frac{M(M-1)}{2}\geq \frac{M^2}{4}.
+\]
+There are at most \(N-1<N\) possible positive differences.  Hence some \(d\)
+satisfies
+\[
+  |A_d|
+  \geq
+  \frac{M^2/4}{N}
+  =
+  \frac{M^2}{4N}.
+\]
+\end{proof}
+
+We call a difference \(d\) \emph{popular} if
+\[
+  |A_d|\geq \frac{M^2}{4N}.
+\]
+Let
+\[
+  \calS(A)=\left\{d\in\{1,\ldots,N-1\}: |A_d|\geq \frac{M^2}{4N}\right\}
+\]
+be the set of popular differences.
+
+\section{What 4-AP-Freeness Forces}
+
+Suppose now that \(A\) is 4-AP-free.  The key unconditional structural fact is
+that fibers \(A_d\) avoid certain specific 3-term progressions.
+
+\begin{lemma}[Step-\(d\) freeness]
+\label{lem:stepd}
+Let \(A\subseteq\{1,\ldots,N\}\) be 4-AP-free and let \(d>0\).  Then \(A_d\)
+contains no 3-term arithmetic progression with common difference \(d\).  In
+other words, there is no \(x\) such that
+\[
+  x,\ x+d,\ x+2d\in A_d.
+\]
+\end{lemma}
+
+\begin{proof}
+Assume for contradiction that \(x,x+d,x+2d\in A_d\).  By definition of \(A_d\),
+\[
+  x\in A_d \quad\Rightarrow\quad x\in A,\ x+d\in A,
+\]
+\[
+  x+d\in A_d \quad\Rightarrow\quad x+d\in A,\ x+2d\in A,
+\]
+and
+\[
+  x+2d\in A_d \quad\Rightarrow\quad x+2d\in A,\ x+3d\in A.
+\]
+Thus
+\[
+  x,\ x+d,\ x+2d,\ x+3d\in A,
+\]
+which is a non-trivial 4-term arithmetic progression in \(A\).  This contradicts
+the assumption that \(A\) is 4-AP-free.
+\end{proof}
+
+\begin{lemma}[Step-\(2d\) freeness]
+\label{lem:step2d}
+Let \(A\subseteq\{1,\ldots,N\}\) be 4-AP-free and let \(d>0\).  Then \(A_d\)
+contains no 3-term arithmetic progression with common difference \(2d\).  In
+other words, there is no \(x\) such that
+\[
+  x,\ x+2d,\ x+4d\in A_d.
+\]
+\end{lemma}
+
+\begin{proof}
+Assume for contradiction that \(x,x+2d,x+4d\in A_d\).  From \(x\in A_d\), we get
+\[
+  x\in A,\qquad x+d\in A.
+\]
+From \(x+2d\in A_d\), we get
+\[
+  x+2d\in A,\qquad x+3d\in A.
+\]
+Therefore
+\[
+  x,\ x+d,\ x+2d,\ x+3d\in A,
+\]
+again a 4-term arithmetic progression in \(A\).  This is impossible.
+\end{proof}
+
+Combining Lemmas \ref{lem:popular}, \ref{lem:stepd}, and \ref{lem:step2d} gives
+the main unconditional partial result.
+
+\begin{proposition}[Partial van Corput fiber structure]
+\label{prop:partial}
+Let \(A\subseteq\{1,\ldots,N\}\) be 4-AP-free and let \(|A|=M\geq 2\).  Then
+there exists \(d\in\{1,\ldots,N-1\}\) such that:
+\begin{enumerate}
+  \item \( |A_d|\geq M^2/(4N)\);
+  \item \(A_d\) contains no 3-term arithmetic progression with common difference \(d\);
+  \item \(A_d\) contains no 3-term arithmetic progression with common difference \(2d\).
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Choose \(d\) by Lemma \ref{lem:popular}.  Since \(A\) is 4-AP-free, Lemma
+\ref{lem:stepd} gives property (2), and Lemma \ref{lem:step2d} gives property
+(3).
+\end{proof}
+
+\section{The Exact Gap}
+
+Proposition \ref{prop:partial} is not enough to apply \(r_3(N)\), because
+\(r_3(N)\) bounds sets with no 3-term arithmetic progressions of any positive
+common difference.  The proposition only rules out common differences \(d\) and
+\(2d\) inside \(A_d\).
+
+This distinction is essential.
+
+\begin{remark}[A warning example]
+Let
+\[
+  A=\{1,2,3,5,6,8,9\}\subseteq\{1,\ldots,9\}.
+\]
+This set is 4-AP-free.  For \(d=1\),
+\[
+  A_1=\{1,2,5,8\}.
+\]
+But \(A_1\) contains the 3-term progression
+\[
+  2,\ 5,\ 8,
+\]
+whose common difference is \(3\).  Thus even a natural fiber of a 4-AP-free set
+need not be fully 3-AP-free.
+\end{remark}
+
+The missing assertion is the following.
+
+\begin{conjecture}[Conjecture 2: popular fully 3-AP-free fiber]
+\label{conj:c2}
+Let \(A\subseteq\{1,\ldots,N\}\) be 4-AP-free, with \(|A|=M\geq 2\).  Then
+there exists \(d\in\calS(A)\) such that \(A_d\) is fully 3-AP-free.
+\end{conjecture}
+
+Equivalently, among the popular differences, at least one fiber has no
+non-trivial 3-term progression with any positive common difference.
+
+\section{Conditional Reduction from \(r_4\) to \(r_3\)}
+
+Conjecture \ref{conj:c2} gives the desired reduction immediately.
+
+\begin{theorem}[Conditional van Corput reduction]
+\label{thm:conditional_vc}
+Assume Conjecture \ref{conj:c2}.  Then for every \(N\),
+\[
+  r_4(N)\leq 2\sqrt{N r_3(N)}.
+\]
+\end{theorem}
+
+\begin{proof}
+Let \(A\subseteq\{1,\ldots,N\}\) be 4-AP-free and set \(M=|A|\).  If \(M<2\), the
+claim is trivial.  Assume \(M\geq 2\).
+
+By Conjecture \ref{conj:c2}, there exists a popular \(d\) such that \(A_d\) is
+fully 3-AP-free.  Since \(d\) is popular,
+\[
+  |A_d|\geq \frac{M^2}{4N}.
+\]
+Since \(A_d\subseteq \{1,\ldots,N\}\) and is 3-AP-free,
+\[
+  |A_d|\leq r_3(N).
+\]
+Therefore
+\[
+  \frac{M^2}{4N}\leq r_3(N),
+\]
+so
+\[
+  M\leq 2\sqrt{N r_3(N)}.
+\]
+Taking \(A\) to have maximum possible size \(M=r_4(N)\) gives the result.
+\end{proof}
+
+\begin{corollary}[Conditional quasi-polynomial \(r_4\) bound]
+\label{cor:conditional_r4}
+Assume Conjecture \ref{conj:c2}.  Assume also Raghavan's bound
+\[
+  r_3(N)
+  \leq
+  C_1 N
+  \exp\!\left(
+    -c_1\frac{(\log N)^{1/6}}{\log\log N}
+  \right)
+\]
+for all sufficiently large \(N\).  Then there exist constants \(C,c>0\) such
+that for all sufficiently large \(N\),
+\[
+  r_4(N)
+  \leq
+  C N
+  \exp\!\left(
+    -c\frac{(\log N)^{1/6}}{\log\log N}
+  \right).
+\]
+\end{corollary}
+
+\begin{proof}
+By Theorem \ref{thm:conditional_vc},
+\[
+  r_4(N)\leq 2\sqrt{N r_3(N)}.
+\]
+Using Raghavan's bound,
+\[
+  r_4(N)
+  \leq
+  2\sqrt{
+    N\cdot
+    C_1 N
+    \exp\!\left(
+      -c_1\frac{(\log N)^{1/6}}{\log\log N}
+    \right)
+  }.
+\]
+Thus
+\[
+  r_4(N)
+  \leq
+  2\sqrt{C_1}\,N
+  \exp\!\left(
+    -\frac{c_1}{2}\frac{(\log N)^{1/6}}{\log\log N}
+  \right).
+\]
+Set \(C=2\sqrt{C_1}\) and \(c=c_1/2\).
+\end{proof}
+
+\begin{remark}
+The square root changes the constant \(c_1\) to \(c_1/2\), but it does not change
+the exponent \(1/6\) on \(\log N\).
+\end{remark}
+
+\section{A \(2\times3\) Grid Reformulation}
+
+The remaining obstruction can be expressed as a grid-avoidance condition.  A
+3-term progression in \(A_d\) with step \(e\) means
+\[
+  x,\ x+e,\ x+2e\in A_d.
+\]
+By definition of \(A_d\), this is equivalent to the six points
+\[
+  x,\ x+e,\ x+2e,\ x+d,\ x+e+d,\ x+2e+d
+\]
+all lying in \(A\).  These six points form a \(2\times 3\) arithmetic grid:
+\[
+  \{x+ie+jd: i=0,1,2,\ j=0,1\}.
+\]
+
+The cases \(e=d\) and \(e=2d\) are already excluded by Lemmas
+\ref{lem:stepd} and \ref{lem:step2d}.  Thus the unresolved part of
+Conjecture \ref{conj:c2} is the possibility of such grids with
+\[
+  e\neq d,\qquad e\neq 2d.
+\]
+
+Define \(G(A,d,N)\) to be the number of pairs \((x,e)\) such that:
+\begin{itemize}
+  \item \(e>0\);
+  \item \(e\neq d\) and \(e\neq 2d\);
+  \item \(x,x+e,x+2e\in A_d\).
+\end{itemize}
+Then Conjecture \ref{conj:c2} is equivalent to:
+\[
+  \exists d\in\calS(A)\quad G(A,d,N)=0.
+\]
+
+This is often the most useful formulation of the problem.  It says that among
+popular differences, at least one column spacing \(d\) avoids all non-trivial
+\(2\times3\) grids.
+
+\section{Computational Evidence}
+
+The repository contains several verification scripts and reports in
+\texttt{runs/erdos142/}.  The core test is:
+
+\begin{quote}
+Given a 4-AP-free set \(A\subseteq\{1,\ldots,N\}\), compute all popular
+differences \(d\in\calS(A)\), compute each fiber \(A_d\), and check whether at
+least one popular fiber is fully 3-AP-free.
+\end{quote}
+
+\subsection{Exhaustive small-\(N\) checks}
+
+The script \texttt{conjecture2\_verify.py} exhaustively checks all 4-AP-free
+sets for small \(N\).  The project reports exhaustive verification through
+\(N\leq 20\), covering approximately \(478{,}000\) 4-AP-free sets, with no
+counterexample to Conjecture \ref{conj:c2}.
+
+\subsection{Random greedy sampling}
+
+For larger \(N\), the project uses random greedy constructions of 4-AP-free sets.
+The reports state that random sampling was extended up to \(N=200000\), with no
+counterexample found across approximately \(4893\) trials.
+
+This is evidence, not proof.  Random greedy sets do not represent all possible
+4-AP-free sets.  Still, the experiments are useful because they reveal which
+naive strengthening attempts are false and where good fibers tend to occur.
+
+\subsection{Observed structural patterns}
+
+The computations show:
+\begin{itemize}
+  \item Conjecture \ref{conj:c2} holds in all tested examples.
+  \item The largest fiber, \(d=\arg\max |A_d|\), is often not 3-AP-free.
+  \item Good fibers usually occur near the lower end of the popular-fiber size
+  spectrum.
+  \item The fraction of bad popular fibers can be very large; reported values
+  reach approximately \(0.9890\) in the largest experiments.
+  \item Despite the high bad fraction, the absolute number of good popular
+  fibers grows in the sampled data.
+\end{itemize}
+
+\section{A Refined Empirical Conjecture}
+
+Let
+\[
+  L=\frac{M^2}{4N}
+\]
+be the popularity threshold and
+\[
+  P=\max_{d\in\calS(A)} |A_d|
+\]
+be the largest popular fiber size.  For \(d\in\calS(A)\), define the witness
+fraction
+\[
+  \mathrm{wfrac}(d)=\frac{|A_d|}{P}.
+\]
+
+The computations suggest that good fibers often occur close to the popularity
+threshold \(L\), and that in random greedy data
+\[
+  \frac{L}{P}\approx 0.20.
+\]
+This motivates the following stronger empirical statement.
+
+\begin{conjecture}[Refined Conjecture 2: lower-quarter witness]
+Let \(A\subseteq\{1,\ldots,N\}\) be 4-AP-free.  Then there exists
+\(d\in\calS(A)\) such that \(A_d\) is fully 3-AP-free and
+\[
+  |A_d|\leq \frac14 \max_{d'\in\calS(A)} |A_{d'}|.
+\]
+\end{conjecture}
+
+This refined conjecture is not needed for Theorem \ref{thm:conditional_vc}, but
+it may be easier to attack structurally because it points toward small popular
+fibers as the likely witnesses.
+
+\section{Lean 4 Formalization}
+
+The project includes Lean 4 files in the \texttt{lean/} directory.  The purpose
+of the formalization is to check the finite combinatorial bookkeeping and to
+make the gap precise.
+
+\subsection{Formalized definitions}
+
+The file \texttt{ArithmeticProgressions.lean} defines:
+\begin{itemize}
+  \item \(k\)-term arithmetic progressions as finite sets of the form
+  \[
+    \{a+i d:0\leq i<k\};
+  \]
+  \item the predicate \texttt{HasKAP A k};
+  \item basic lemmas about the cardinality of such progressions;
+  \item a bridge between \texttt{HasKAP A 3} and Mathlib's
+  \texttt{ThreeAPFree}.
+\end{itemize}
+
+The file \texttt{RkN.lean} defines \(r_k(N)\) as a maximum over finite subsets of
+\(\{0,\ldots,N-1\}\), using Lean's \texttt{Nat.findGreatest}.  It also proves the
+bridge
+\[
+  r_3(N)=\texttt{rothNumberNat}(N),
+\]
+linking the custom definition to Mathlib's Roth-number definition.
+
+\subsection{Formalized partial van Corput structure}
+
+The file \texttt{VanCorput.lean} defines the fiber
+\[
+  A_d=\{x\in A:x+d\in A\}
+\]
+as \texttt{fiberAtDiff A d}.  It proves the Lean analogues of Lemmas
+\ref{lem:stepd} and \ref{lem:step2d}.  It also proves the popular-difference
+pigeonhole lemma and packages the result as a Lean theorem called
+\texttt{proposition\_1}.
+
+Thus Proposition \ref{prop:partial} is genuinely formalized.
+
+\subsection{Declarations still using \texttt{sorry}}
+
+The important unfinished declarations are:
+\begin{itemize}
+  \item \texttt{van\_corput\_inequality}, corresponding to
+  \(r_4(N)\leq 2\sqrt{N r_3(N)}\);
+  \item \texttt{rk\_four\_raghavan\_bound}, corresponding to the conditional
+  quasi-polynomial \(r_4(N)\) bound;
+  \item general Szemerédi statements for \(k\geq4\), because they are not
+  available in Mathlib at the required level.
+\end{itemize}
+
+This is the correct formal status: the partial combinatorial result is proved,
+while the full reduction remains blocked by Conjecture \ref{conj:c2}.
+
+\section{What Is Actually Being Submitted}
+
+The safe partial result is Proposition \ref{prop:partial}, together with the
+isolation of Conjecture \ref{conj:c2} and the conditional consequence Theorem
+\ref{thm:conditional_vc}.
+
+The submission should not claim an unconditional new upper bound for \(r_4(N)\).
+The correct claim is:
+
+\begin{quote}
+We prove that every 4-AP-free set has a popular difference fiber satisfying a
+large lower bound and avoiding 3-APs of steps \(d\) and \(2d\).  We isolate the
+remaining full-freeness condition as Conjecture 2.  Conditional on this
+conjecture, Raghavan's \(r_3(N)\) bound implies a quasi-polynomial upper bound
+for \(r_4(N)\).  Computational evidence supports the conjecture.
+\end{quote}
+
+This is a meaningful partial result because it:
+\begin{enumerate}
+  \item gives a clean and formally checked decomposition of the attempted van
+  Corput reduction;
+  \item identifies the exact obstruction rather than hiding it in an incorrect
+  ``fiber is 3-AP-free'' claim;
+  \item gives a concrete finite conjecture that can be tested computationally;
+  \item reformulates the obstruction as a \(2\times3\) grid-avoidance problem.
+\end{enumerate}
+
+\section{Open Problems}
+
+\begin{enumerate}
+  \item Prove or disprove Conjecture \ref{conj:c2}.
+  \item Prove a weaker statement still sufficient for
+  \(r_4(N)\leq C\sqrt{N r_3(N)}\).
+  \item Prove a positive lower bound on the number of good popular fibers, or
+  show that at least one must exist by an averaging or energy argument.
+  \item Establish structural restrictions on the \(2\times3\) grids counted by
+  \(G(A,d,N)\).
+  \item Test Conjecture \ref{conj:c2} on adversarial constructions beyond random
+  greedy 4-AP-free sets.
+  \item Formalize the equivalence \(G(A,d,N)=0\) iff \(A_d\) is fully 3-AP-free,
+  modulo the already-proved step-\(d\) and step-\(2d\) exclusions.
+\end{enumerate}
+
+\begin{thebibliography}{9}
+
+\bibitem{raghavan2026}
+Rushil Raghavan.
+\newblock Improved bounds for three-term progression-free sets.
+\newblock arXiv:2603.27045, 2026.
+
+\bibitem{greentao2017}
+Ben Green and Terence Tao.
+\newblock New bounds for Szemerédi's theorem, III: A polylogarithmic bound for
+\(r_4(N)\).
+\newblock 2017.
+
+\bibitem{szemeredi1975}
+Endre Szemerédi.
+\newblock On sets of integers containing no \(k\) elements in arithmetic progression.
+\newblock \emph{Acta Arithmetica}, 27:199--245, 1975.
+
+\bibitem{ehps2024}
+Christian Elsholtz, Zach Hunter, Laura Proske, and Lisa Sauermann.
+\newblock Improving Behrend's construction: Sets without arithmetic progressions
+in integers and over finite fields.
+\newblock arXiv:2406.12290, 2024.
+
+\bibitem{kelleymeka2023}
+Zander Kelley and Raghu Meka.
+\newblock Strong bounds for 3-progressions.
+\newblock 2023.
+
+\end{thebibliography}
+
+\end{document}

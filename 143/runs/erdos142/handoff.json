@@ -1,0 +1,366 @@
+{
+  "meta": {
+    "from": "witsoc-explorer",
+    "to": "witsoc-research-lovász",
+    "mission": "erdos142",
+    "handoff_type": "Explorer → Lovász (v2: REVISED after steer:adjust + Lovász BL1/BL3 review)",
+    "date": "2026-06-21",
+    "pipeline": "witsoc-explorer → witsoc-research-lovász → witsoc-explorer → witsoc-generator",
+    "revision_note": "v2 revision: KL ceiling corrected to 1/3 (not 1/2); top_gap changed to GAP2 (doubly-iterated Raghavan, most tractable); KL2 (tripartite grid norm) added as new gap; EHPS lower bound description corrected; van Corput corollary (r_4(N) from Raghavan) added as new observation. Explorer Finding F3 exponent '1/12' retracted — correct exponent is 1/6 with halved constant."
+  },
+
+  "critical_corrections": {
+    "correction_1": {
+      "what_was_wrong": "Gap 1 frozen target was r_3(N) ≤ N·exp(-c(log N)^{1/2}), claiming Kelley-Lyu directly gives exponent 1/2 for 3-APs",
+      "correction": "Kelley-Lyu's √d trick gives exponent 1/3 (NOT 1/2) when adapted to 3-APs. In KL: d ~ log(N) → √d ~ (log N)^{1/2} → exponent 1/2. In Croot-Sisask for 3-APs: d = α^{-2} → √d = α^{-1} → L¹ rank O(α^{-1}) → exponent 1/(1·3) = 1/3. Exponent 1/2 via sifting requires 'Tripartite Grid Norm' (Conjecture KL2, 3-7 years, open).",
+      "source": "Kelley-Lyu analysis (research/kelley_lyu_analysis.md, §3-§5); confirmed by Lovász BL1 analysis",
+      "probability_direct_transfer": "15-20% for direct port to give 1/2; ~50% for 1/3 via KL √d trick"
+    },
+    "correction_2": {
+      "what_was_wrong": "EHPS lower bound described as r_3(N) ≥ N·exp(-C(log N)^{1-ε})",
+      "correction": "EHPS (arXiv:2406.12290) improves the CONSTANT in Behrend's exp(-c·√(log N)), not the exponent structure. Correct: r_3(N) ≥ N·2^{-(2√(log₂(24/7))+o(1))·√(log₂N)} = N·exp(-c'·√(log N)) with c' ≈ 2.667. The exponent is 1/2 (same as Behrend), only the constant improved.",
+      "source": "research/source_refresh.md §2.1"
+    },
+    "correction_3": {
+      "what_was_wrong": "Kelley-Lyu dated as 'June 2026'",
+      "correction": "arXiv:2505.01587 was first posted May 2025 (v1). Latest revision June 2026. Cite as 'May 2025; updated June 2026'.",
+      "source": "research/source_refresh.md §2.2"
+    },
+    "correction_4": {
+      "what_was_wrong": "Explorer Finding F3: van Corput gives r_4(N) ≤ N·exp(-(log N)^{1/12})",
+      "correction": "FORMULA ERROR. Correct: r_4(N) ≤ N·exp(-c/2·(log N)^{1/6}). The exponent of log N stays 1/6; only the constant halves. The '1/12' would require √(exp(-x^{1/6})) = exp(-x^{1/12}) which is false. Correct: √(exp(-c·x^{1/6})) = exp(-c/2·x^{1/6}).",
+      "source": "Lovász BL3 analysis (runs/erdos142/lovász_BL3_analysis.md §5)"
+    }
+  },
+
+  "new_result": {
+    "label": "Van Corput + Raghavan: first quasi-polynomial bound for r_4(N)",
+    "statement": "r_4(N) ≤ C·N·exp(-c/2·(log N)^{1/6})",
+    "derivation": "Van Corput: r_4(N) ≤ C√(N·r_3(N)) [folklore, valid via Gowers/Cauchy-Schwarz]; Raghavan 2026: r_3(N) ≤ C₁N·exp(-c(log N)^{1/6}); combined: r_4(N) ≤ CC₁^{1/2}·N·exp(-c/2·(log N)^{1/6})",
+    "significance": "First quasi-polynomial bound for k=4, beating Green-Tao 2017 (N(logN)^{-c}) and LSS 2024 (N·exp(-(loglogN)^{c_4})). Exponent 1/6 is same as r_3(N), constant halved.",
+    "novelty_status": "Appears to be a new observation not noted in Raghavan (2026) or subsequent literature",
+    "caution": "The van Corput step requires the Gowers/Cauchy-Schwarz energy argument (not the direct 6-point argument which has a gap). The direct claim 'A_d is 3-AP-free when A is 4-AP-free' is false in general; what IS true is that some A_d is 3-AP-free and has size ≥ |A|²/(cN)."
+  },
+
+  "top_gap_for_lovász": {
+    "gap_id": "GAP2",
+    "label": "Doubly-Iterated Raghavan: L¹ Density Increment for 3-APs",
+    "ranking_reason": "MOST TRACTABLE (1-3 years). The Sifting Hierarchy Formula confirms m=4 predicts exponent 1/3. BL1 analysis shows: ℓ¹ spectrum of 1_A has rank O(α^{-1}), but the standard density increment requires L² control. The KEY missing piece is an L¹ density increment for 3-APs on a rank O(α^{-1}) Bohr set. This is precisely stated and mechanically within reach of the current sifting framework."
+  },
+
+  "second_gap_for_lovász": {
+    "gap_id": "KL2_TRIPARTITE",
+    "label": "Tripartite Grid Norm Conjecture (path to exponent 1/2)",
+    "ranking_reason": "MEDIUM-TERM (3-7 years). If the KL √d trick can be extended to trilinear (3-variable) tensors via a 'tripartite grid norm', it would give exponent 1/2 for r_3(N), matching Behrend. No trilinear analogue of KL's bilinear decoupling is known. This is the correct long-term research target after GAP2.",
+    "new_conjectures": {
+      "KL1": "Bilinear Barrier: The KL √d trick is bilinear-specific; gives exponent 1/3 for any k-linear sifting with k ≥ 3.",
+      "KL2": "Tripartite Grid Norm: There exists a U(2,2,k) grid norm for tripartite arrays such that the KL sifting lemma extends, giving r_3(N) ≤ N·exp(-c(log N)^{1/2}). Status: NEW OPEN CONJECTURE (3-7 year target).",
+      "KL3": "Ceiling Dichotomy: The ceiling achievable by grid norm sifting is either exactly 1/3 (if tripartite reduction impossible) or exactly 1/2 (if KL2 provable). No intermediate value."
+    }
+  },
+
+  "gap1_handoff": {
+    "frozen_target": {
+      "statement": "r_3(N) ≤ N · exp(−c(log N)^{1/2}) for some absolute c > 0 [REVISED: ceiling via direct KL adaptation is 1/3, not 1/2; 1/2 requires KL2 conjecture]",
+      "quantifiers": "∃ c > 0, ∃ N₀ ∈ ℕ, ∀ N ≥ N₀: r_3(N) ≤ N · exp(−c · (log N)^{1/2})",
+      "level": "Level 2 of the asymptotic program (matching Behrend lower bound exponent)",
+      "significance": "Ultimate target; requires Tripartite Grid Norm Conjecture (KL2). Near-term target is exponent 1/3 via L¹ density increment (GAP2).",
+      "revised_ceiling": "Direct KL √d adaptation to 3-APs gives exponent 1/3 (not 1/2). Bilinear structure (KL: 2-variable) vs trilinear (3-APs: 3-variable) is the key obstacle. No trilinear decoupling inequality known.",
+      "transfer_probability": "15-20% direct to 1/2; 50-60% for 1/3 via KL √d + L¹ density increment"
+    },
+
+    "variant_status_ledger": {
+      "r3_bound_exp_1_12": {"status": "PROVED", "reference": "Kelley–Meka 2023 (arXiv:2302.05537)"},
+      "r3_bound_exp_1_9": {"status": "PROVED", "reference": "Bloom–Sisask 2023 (arXiv:2309.02353)"},
+      "r3_bound_exp_1_6": {"status": "PROVED", "reference": "Raghavan 2026 (arXiv:2603.27045), with extra (log log N)^{-1} factor"},
+      "r3_bound_exp_1_3": {"status": "PREDICTED (Sifting Hierarchy m=4), NOT PROVED", "reference": "Conjecture A1 in proof_strategy.md"},
+      "r3_bound_exp_1_2": {"status": "OPEN TARGET (matches Behrend lower bound)", "reference": "Central Hypothesis in hypothesis_summary.md"},
+      "kelley_lyu_comm_complexity": {"status": "PROVED in communication complexity setting", "reference": "Kelley–Lyu 2026 (arXiv:2505.01587)"},
+      "kelley_lyu_transfer_to_r3": {"status": "OPEN — neither proved nor disproved"},
+      "behrend_lower_bound": {"status": "PROVED", "reference": "Behrend 1946; constant improved by Elsholtz–Hunter–Proske–Sauermann 2024 (arXiv:2406.12290)"}
+    },
+
+    "best_known_results": {
+      "upper_bound": "r_3(N) ≤ N · exp(−c · (log N)^{1/6} / log log N) [Raghavan 2026]",
+      "lower_bound": "r_3(N) ≥ N · exp(−C · (log N)^{1/2}) [Behrend 1946, constant C ≈ 2.667 by EHPS 2024]",
+      "communication_complexity_analogue": "In the bipartite communication complexity setting with 'grid norms', Kelley–Lyu achieve exponent 1/2 using the same sifting machinery"
+    },
+
+    "known_obstructions_failed_methods": [
+      {
+        "method": "Fourier-only approach (Roth 1953)",
+        "why_failed": "Gives only N / log log N; no quasi-polynomial bound",
+        "ceiling": "Exponent 0 in the N · exp(-(log N)^β) scale"
+      },
+      {
+        "method": "Kelley–Meka sifting (m=1)",
+        "why_insufficient": "Effective rank O(α^{-4}) gives exponent 1/12, not 1/2",
+        "ceiling": "1/12"
+      },
+      {
+        "method": "Bloom–Sisask bootstrapping (m=2)",
+        "why_insufficient": "Effective rank O(α^{-3}) gives exponent 1/9",
+        "ceiling": "1/9"
+      },
+      {
+        "method": "Raghavan iterated sifting (m=3)",
+        "why_insufficient": "Achieves the Croot–Sisask L² floor: effective rank O(α^{-2}), exponent 1/6. Cannot go further within L² framework.",
+        "ceiling": "1/6 (with L² methods); the L² barrier prevents surpassing this without changing the norm"
+      },
+      {
+        "method": "Standard Croot–Sisask lemma (L² version)",
+        "fundamental_limitation": "Rank d = O(α^{-2}) is TIGHT for L²: by Parseval, the number of Fourier frequencies ξ with |f̂(ξ)| ≥ εα² is at most O(1/(ε²α²)). Any improvement requires changing to L¹ or a different norm.",
+        "ceiling": "Effective rank ρ = 2 (rank O(α^{-2}))"
+      }
+    ],
+
+    "theorem_precondition_gaps": [
+      {
+        "id": "TPG1",
+        "precondition": "L¹-almost-periodicity lemma with rank O(α^{-1})",
+        "status": "OPEN",
+        "needed_for": "Reducing effective rank to ρ=1, giving exponent 1/3; or ρ=0 for exponent 1/2"
+      },
+      {
+        "id": "TPG2",
+        "precondition": "Bipartite/grid reduction of 3-AP condition",
+        "status": "UNCLEAR",
+        "needed_for": "Porting Kelley–Lyu's grid-norm argument to 3-APs; requires showing 3-AP tensor has 'grid-like' structure"
+      },
+      {
+        "id": "TPG3",
+        "precondition": "Understanding of what 'grid norm sifting' does mechanistically in Kelley–Lyu",
+        "status": "NEEDS PAPER ANALYSIS",
+        "needed_for": "Any transfer argument; requires reading arXiv:2505.01587 in detail"
+      }
+    ],
+
+    "actual_barrier_lemmas": [
+      {
+        "lemma_id": "BL1-GRID",
+        "name": "Grid-Norm Croot–Sisask Lemma for 3-APs",
+        "precise_statement": "Let A ⊆ Z_N with density α = |A|/N. Consider the 3-AP tensor T(a,b,c) = 1_A(a) · 1_A(b) · 1_A(c) · 1[a+c=2b]. For fixed b, define the bipartite function f_b(a,c) = 1_A(a) · 1_A(c) · 1[a+c=2b]. The 'grid norm' of f_b (analogous to Kelley–Lyu's grid norm) is ‖f_b‖_{grid} = (∑_a ∑_c f_b(a,c))^{1/2} / N. Claim: if ‖f_b‖_{grid} ≥ δ for many b, then there exists a Bohr set B = Bohr(Γ, ρ) of rank d = O(δ^{-1} · log(1/ε)) such that A is (ε, B)-almost-periodic — i.e., ‖1_A * μ_B - 1_A‖₁ ≤ ε · α · N. If true with d = O(α^{-1}), this gives exponent 1/3. If d = O(1) (independent of α), this gives exponent 1/2.",
+        "why_barrier": "Whether the grid-norm sifting gives rank O(α^{-1}) or O(α^{-2}) for 3-APs depends on the TRIPARTITE vs. BIPARTITE structure. Kelley–Lyu's result in the bipartite setting gives O(α^{-1}). The question is whether tripartite 3-APs inherit this rank improvement.",
+        "status": "OPEN",
+        "key_question_for_lovász": "Is the 3-AP incidence tensor T(a,b,c) = 1[a+c=2b] equivalent to a grid/bipartite structure after a suitable change of variables or decomposition?"
+      },
+      {
+        "lemma_id": "BL1-L1",
+        "name": "L¹-Almost-Periodicity Lemma",
+        "precise_statement": "Let f: Z_N → [-1,1] with E[f] = α. Then there exists a Bohr set B = Bohr(Γ, ρ) of rank d = O(α^{-1} · log(1/δ)) and ρ = Ω(α^{C·α^{-1}}) (exponentially small in rank, acceptable for the iteration) such that ‖f * μ_B - f‖₁ ≤ δ · ‖f‖₁. Equivalently: the set Spec_δ(f) = {ξ ∈ ℤ_N : |f̂(ξ)| ≥ δ · ‖f̂‖_∞} has |Spec_δ(f)| ≤ C · α^{-1} / δ.",
+        "why_barrier": "The standard Croot–Sisask lemma proves this with rank O(α^{-2}) using L² Parseval. The L¹ analogue would give rank O(α^{-1}) using L¹ Parseval (Hausdorff–Young). The L¹ version requires non-negativity of f or a sign condition that may not hold in general.",
+        "status": "OPEN",
+        "key_question_for_lovász": "Under what conditions on f does L¹-almost-periodicity hold with rank O(α^{-1})? Is non-negativity sufficient? Does the indicator function 1_A automatically satisfy these conditions?"
+      }
+    ],
+
+    "actual_lemma_queue_seed": [
+      {
+        "priority": 1,
+        "lemma": "Tripartite-to-Bipartite Reduction for 3-APs",
+        "statement": "The 3-AP counting condition Σ_{a,b,c} 1_A(a) 1_A(b) 1_A(c) 1[a+c=2b] can be reduced to a sum of bipartite grid norms: Σ_b |{(a,c): a+c=2b, a ∈ A, c ∈ A}| = Σ_b (1_A * 1_A)(2b). The function (1_A * 1_A)(2b) is a convolution evaluated at 2b, and its Fourier transform is |Â(ξ)|², which is non-negative. This non-negativity is a key structural property.",
+        "significance": "The non-negativity of |Â(ξ)|² might be the 'grid-like structure' that enables Kelley–Lyu's improvement. If so, the 3-AP problem IS a bipartite problem (from the Fourier perspective).",
+        "route": "R1a"
+      },
+      {
+        "priority": 2,
+        "lemma": "Fourier Positivity Lemma for 3-AP Counting",
+        "statement": "The 3-AP count Λ_3(A) = Σ_{a+c=2b} 1_A(a) 1_A(b) 1_A(c) equals (1/N) Σ_ξ Â(ξ)² · Â̄(2ξ). The term |Â(ξ)|² is non-negative. This positivity structure might be exploitable in the grid-norm framework.",
+        "significance": "This formula shows the 3-AP tensor DOES have a bipartite structure when expressed via Fourier: the 'Alice half' contributes Â(ξ)² (positive) and the 'Bob half' contributes Â̄(2ξ). Whether this constitutes a 'grid norm' in Kelley–Lyu's sense is the key question.",
+        "route": "R1c"
+      },
+      {
+        "priority": 3,
+        "lemma": "Spectral Improvement Under Non-Negativity",
+        "statement": "If f: Z_N → [0,1] (non-negative!), then the almost-periodicity Bohr set can be taken of rank d = O(‖f‖₁^{-1} · log(1/δ)) (using only |{ξ: |f̂(ξ)| ≥ δ · ‖f̂‖_∞}| ≤ ‖f‖₁/δ·‖f‖_∞ ≤ N/δ from L∞ bounds). But 1_A: Z_N → [0,1] is already non-negative! So the L¹ estimate might apply directly.",
+        "significance": "If 1_A being non-negative allows the L¹ spectral bound to apply, then the rank of the almost-periodicity Bohr set is O(α^{-1}), not O(α^{-2}). This would be the breakthrough.",
+        "route": "R1b"
+      },
+      {
+        "priority": 4,
+        "lemma": "Kelley–Lyu Grid Norm Sifting Main Lemma",
+        "statement": "From arXiv:2505.01587: if F: X × Y → [-1,1] with E[F] = β, then there exist 'row restrictions' X' ⊆ X and 'column restrictions' Y' ⊆ Y with |X'| ≥ β^{O(1)} |X|, |Y'| ≥ β^{O(1)} |Y|, and a Bohr set B of rank O(β^{-1}) such that F(x, y+h) ≈ F(x, y) for all h ∈ B, uniformly over (x, y) ∈ X' × Y'.",
+        "significance": "The rank O(β^{-1}) (not O(β^{-2})) is the key improvement over standard Croot–Sisask. Understanding what 'grid structure' (bipartite, with row/column restrictions) enables this improvement is critical.",
+        "note": "CAVEAT: This statement is the Explorer's reconstruction of Kelley–Lyu's lemma from context (final_report.md, hypothesis_summary.md). The exact statement in arXiv:2505.01587 must be verified by Lovász.",
+        "route": "R1c"
+      }
+    ],
+
+    "counterexample_pressure": {
+      "primary_obstacle": "The 3-AP tensor is TRIPARTITE (symmetric in a, b, c) not bipartite. Kelley–Lyu explicitly uses the 2-player (X × Y bipartite) structure of communication complexity. If the tripartite structure is essential to the 3-AP problem and cannot be decomposed into bipartite pieces, the transfer fails.",
+      "formal_obstruction_candidate": "Construct f: Z_N → [-1,1] with density α such that for ALL Bohr sets B of rank < α^{-2+ε} (for any ε > 0), f is NOT almost-periodic on B in the L¹ sense. Such a construction would prove the L¹ barrier lemma BL1-L1 is FALSE, showing rank O(α^{-2}) is tight even for L¹ almost-periodicity.",
+      "evidence_against_transfer": [
+        "The 3 'players' in a 3-AP (a, b, c roles) are NOT symmetric from the Fourier perspective: a and c play the same role (they are averaged in the convolution), but b plays the 'middle' role (evaluated at 2b). This asymmetry partially bipartitizes the problem.",
+        "If the transfer worked, the Kelley–Meka proof (which applies similar sifting with 3-fold structure) would already have achieved exponent better than 1/12. The fact that it didn't suggests the 3-fold structure IS fundamentally harder."
+      ],
+      "evidence_for_transfer": [
+        "The Fourier formula Λ_3(A) = (1/N)Σ_ξ |Â(ξ)|² Â(-2ξ) shows that the 3-AP counting function is a BILINEAR form in (|Â|², Â). This bilinear structure is exactly the grid-norm framework.",
+        "The non-negativity of 1_A (indicator function) enables L¹ spectral bounds with rank O(α^{-1}) rather than O(α^{-2}). Kelley–Lyu may exploit an analogous non-negativity in their bipartite setting."
+      ]
+    },
+
+    "lovász_success_criteria": [
+      "Identify: Is the 3-AP Fourier counting formula Σ_ξ |Â(ξ)|² Â(-2ξ) a 'grid norm' in the Kelley–Lyu sense? Precise statement needed.",
+      "Determine: Does non-negativity of 1_A allow rank O(α^{-1}) instead of O(α^{-2}) in the Croot–Sisask lemma?",
+      "Produce: Either (a) a proof sketch of the L¹-Croot-Sisask Lemma with rank O(α^{-1}) for indicator functions, OR (b) a counterexample or obstruction showing rank Ω(α^{-2}) is necessary even for non-negative f.",
+      "Evaluate: Read the key lemmas of arXiv:2505.01587 and compare their structure to the 3-AP incidence structure. Identify exactly which structural property of grids enables O(α^{-1}) rank vs. O(α^{-2}) for general sets."
+    ]
+  },
+
+  "gap2_handoff": {
+    "frozen_target": {
+      "statement": "r_3(N) ≤ N · exp(−c(log N)^{1/3}) for some absolute c > 0",
+      "quantifiers": "∃ c > 0, ∃ N₀ ∈ ℕ, ∀ N ≥ N₀: r_3(N) ≤ N · exp(−c · (log N)^{1/3})",
+      "level": "Sifting Hierarchy m=4 (next predicted step; empirically confirmed formula for m=1,2,3)",
+      "significance": "Would double current best exponent from 1/6 to 1/3; most tractable near-term target by expert consensus. The L¹ density increment (redesigning KM to use L¹ spectrum control) is the exact missing piece."
+    },
+    "top_priority_reason": "Most tractable (1-3 years). Ingredients available: Raghavan 2026, BL1 analysis shows ℓ¹ spectrum gives rank O(α^{-1}), barrier lemma precisely identified. Generator can attempt the L¹ density increment redesign.",
+
+    "variant_status_ledger": {
+      "r3_exp_1_12": {"status": "PROVED", "reference": "Kelley–Meka 2023 (arXiv:2302.05537)"},
+      "r3_exp_1_9": {"status": "PROVED", "reference": "Bloom–Sisask 2023 (arXiv:2309.02353)"},
+      "r3_exp_1_6": {"status": "PROVED", "reference": "Raghavan 2026 (arXiv:2603.27045)"},
+      "r3_exp_1_3": {"status": "PREDICTED (Sifting Hierarchy m=4), NOT PROVED", "notes": "KL √d trick gives 1/3 when adapted to 3-APs with L¹ density increment; see barrier lemma BL2-L1DI below"},
+      "l1_density_increment": {"status": "OPEN — the key missing piece for m=4"},
+      "sifting_hierarchy_formula_proven": {"status": "NOT PROVED — empirical only (3 data points)"},
+      "r4_van_corput_from_raghavan": {"status": "NEW OBSERVATION — r_4(N) ≤ N·exp(-c/2·(logN)^{1/6}) via van Corput, likely not in Raghavan (2026)"}
+    },
+
+    "best_known_results": {
+      "r3_upper": "N · exp(−c(log N)^{1/6} / log log N) [Raghavan 2026]",
+      "r3_lower": "N · exp(−c'·(log N)^{1/2}) [Behrend 1946, constant improved by EHPS 2024 to c' ≈ 2.667 in log₂ units]",
+      "r4_new": "N · exp(-c/2·(log N)^{1/6}) [NEW: van Corput from Raghavan; see new_result above]",
+      "sifting_hierarchy_data": "f(1)=1/12 ✓, f(2)=1/9 ✓, f(3)=1/6 ✓, f(4)=1/3 PREDICTED"
+    },
+
+    "key_barrier_lemma": {
+      "lemma_id": "BL2-L1DI",
+      "name": "L¹ Density Increment for 3-APs on Rank O(α^{-1}) Bohr Sets",
+      "precise_statement": "Let A ⊆ Z_N with density α. Let B = Bohr(Spec_{ℓ¹}(1_A-α), ρ) be the Bohr set corresponding to the ℓ¹ large spectrum Spec_{ℓ¹} = {ξ≠0: |Â(ξ)| ≥ δ·α} (threshold δ·f̂(0) = δ·α). Then |Spec_{ℓ¹}| ≤ 1/(δ²α) = O(α^{-1}) and B has rank d = O(α^{-1}). CLAIM: If A is not 3-AP-free, there exists a translate B+t such that E[1_A | B+t] ≥ α + Ω(α^C/d) = α + Ω(α^{C+1}).",
+      "status": "OPEN — the density increment from L¹-almost-periodicity to density increase is the key missing step",
+      "why_hard": "The standard KM density increment uses L² almost-periodicity: ‖1_A * μ_B - 1_A‖₂ ≤ ε√α, from which a density increase on a translate of B follows by Cauchy-Schwarz. The L¹ analogue ‖1_A * μ_B - 1_A‖₁ ≤ εα is WEAKER (‖·‖₂ vs ‖·‖₁); it gives ∫|1_A * μ_B - 1_A|dμ ≤ εα, but extracting a density increase requires the mass to concentrate on some B+t, which does NOT follow from L¹ control alone.",
+      "what_is_needed": "A new argument that uses: (1) the 3-AP structure of A, (2) the L¹-almost-periodicity of 1_A on B, (3) the fact that A is not 3-AP-free, to find a translate B+t with A-density ≥ α + Ω(α^{C+1}). This might require a 'counting via L¹' argument rather than the standard 'energy increment' approach."
+    },
+
+    "actual_lemma_queue_seed": [
+      {
+        "priority": 1,
+        "lemma": "L¹ Density Increment for 3-APs",
+        "statement": "BL2-L1DI above — the full lemma for Generator to attempt",
+        "route": "GAP2 main track"
+      },
+      {
+        "priority": 2,
+        "lemma": "Van Corput Corollary: r_4(N) ≤ N·exp(-c/2(logN)^{1/6})",
+        "statement": "If A ⊆ {1,...,N} is 4-AP-free, then ∃d: A∩(A-d) is 3-AP-free with |A∩(A-d)| ≥ |A|²/(4N). Hence r_4(N) ≤ 2√(N·r_3(N)) ≤ 2N·exp(-c/2(logN)^{1/6}).",
+        "route": "GAP2 quick win (new observation, likely publishable)"
+      },
+      {
+        "priority": 3,
+        "lemma": "Sifting Hierarchy Formula as Theorem",
+        "statement": "f(m) = 1/(3(5-m)) is a theorem about the Kelley-Meka framework (not just empirical). Specifically: after m levels of conditioning in the sifting, the effective rank is O(α^{-(4-m)}) and the exponent is 1/(3(4-m+1)) = 1/(3(5-m)).",
+        "route": "GAP2 theoretical foundation"
+      }
+    ],
+
+    "counterexample_pressure": {
+      "main_concern": "L¹-AP might not give a density increment at all. Consider: L¹-AP says ∫|1_A * μ_B - α|dμ ≤ εα. This could hold even if 1_A * μ_B ≈ α everywhere (the difference is small everywhere, not concentrated). In that case, no single translate B+t has density > α + Ω(something).",
+      "potential_counterexample": "A Behrend set might be ℓ¹-almost-periodic on a small Bohr set B (of rank O(α^{-1})), but spread its 'density excess' over all translates of B uniformly (no concentrated translate). This would mean BL2-L1DI is FALSE — there is no density increment — and the sifting hierarchy formula breaks at m=4.",
+      "evidence_it_wont_happen": "The 3-AP structure of the density increment should force some concentration. If A is 3-AP-rich on a Bohr set B, the 3-AP counting must come from a structured piece, which by Green-Ruzsa should live on a translate of B."
+    },
+
+    "generator_authorization": "YES — authorized for both tracks: (A) L¹ density increment (main goal, hard), (B) van Corput corollary (quick win, formalize as new result)",
+
+    "success_criteria": [
+      "Prove BL2-L1DI: L¹ density increment on rank O(α^{-1}) Bohr set (gives exponent 1/3 for r_3(N))",
+      "OR: Disprove BL2-L1DI with explicit counterexample (tells us m=4 sifting needs a different mechanism)",
+      "Formalize van Corput + Raghavan corollary as clean proposition (new observation for r_4(N), likely publishable)"
+    ]
+  },
+
+  "gap3_handoff": {
+    "frozen_target": {
+      "statement": "r_4(N) ≤ N · exp(−(log N)^c) for some c > 0",
+      "quantifiers": "∃ c > 0, ∃ N₀ ∈ ℕ, ∀ N ≥ N₀: r_4(N) ≤ N · exp(−(log N)^c)",
+      "level": "Level 1 of the k=4 asymptotic problem (first quasi-polynomial bound — NOW PARTIALLY ACHIEVED via van Corput + Raghavan)",
+      "significance": "r_4(N) ≤ N·exp(-c/2(logN)^{1/6}) is already achievable via van Corput + Raghavan (new observation). The deeper target is exponent c > 0 achieved by a DIRECT k=4 argument (not via van Corput from k=3)."
+    },
+
+    "variant_status_ledger": {
+      "r4_polylog": {"status": "PROVED", "reference": "Green–Tao 2017 (arXiv:1705.01703): r_4(N) ≤ N(log N)^{-c}"},
+      "r4_van_corput_quasi_poly": {"status": "NEW OBSERVATION — r_4(N) ≤ N·exp(-c/2·(logN)^{1/6}) via van Corput + Raghavan 2026"},
+      "r4_direct_quasi_poly": {"status": "OPEN — a direct k=4 argument giving any N·exp(-(logN)^c) would be a much deeper result"},
+      "u3_inverse_theorem_quasipolynomial": {"status": "PROVED", "reference": "Leng–Sah–Sawhney 2024 (arXiv:2402.17994)"},
+      "quadratic_croot_sisask_lemma": {"status": "OPEN — the key missing piece for a DIRECT k=4 bound"},
+      "2step_nilbohr_density_increment": {"status": "OPEN"}
+    },
+
+    "best_known_results": {
+      "upper_bound_old": "r_4(N) ≤ N · (log N)^{-c} [Green–Tao 2017]",
+      "upper_bound_new": "r_4(N) ≤ N · exp(-c/2·(logN)^{1/6}) [NEW: van Corput from Raghavan 2026 — see gap2_handoff.new_result]",
+      "lower_bound": "r_4(N) ≥ N · exp(−C · (log N)^{1/2}) [Behrend 1946 — sphere is 4-AP-free]",
+      "tools_available": "Leng–Sah–Sawhney 2024 quasipolynomial U³ inverse theorem (necessary but not sufficient for DIRECT k=4 bound)"
+    },
+
+    "known_obstructions_failed_methods": [
+      {
+        "method": "Direct Kelley–Meka adaptation to k=4",
+        "why_failed": "KM uses Bohr sets (from U² / Fourier inverse). For k=4, need U³ inverse theorem (Green–Tao 2012) which gives 2-step nilsequences, not Fourier characters. Bohr set iteration does not extend to 2-step nilmanifolds without new ideas."
+      },
+      {
+        "method": "Leng–Sah–Sawhney (2024) path for k=4",
+        "why_failed": "LSS proved quasipolynomial U^{s+1} inverse for all s, but for s=2 (U³, k=4), the density increment step fails due to 2-torsion in 2-step nilmanifolds. The equidistribution of 2-step nilsequences on sub-progressions has a qualitatively worse quantitative bound than for step ≥ 3."
+      },
+      {
+        "method": "Ergodic theory (Furstenberg–Bergelson–Leibman)",
+        "why_insufficient": "Gives qualitative result (r_4(N) = o(N)) but no quantitative rate."
+      }
+    ],
+
+    "actual_barrier_lemmas": [
+      {
+        "lemma_id": "BL3-QCS",
+        "name": "Quadratic Croot–Sisask Lemma (for U³ norm)",
+        "precise_statement": "Let f: Z_N → [-1,1] with ‖f‖_{U³[N]} ≥ δ. Then there exists a set QBohr(Γ, ρ, Q) ⊆ Z_N (a '2-step nil-Bohr set') defined by: QBohr = {h ∈ Z_N : |⟨h, γ⟩| ≤ ρ for all γ ∈ Γ, and |[h, g_γ]| ≤ σ for all γ ∈ Γ} where g_γ are elements of a 2-step nilpotent group G and [·,·] is the group commutator; with |Γ| = d = O((log 1/δ)^C) (quasipolynomial rank) and |QBohr| ≥ N · exp(−O((log 1/δ)^C)); such that ‖T_h f - f‖_{U²[N]} ≤ ε · ‖f‖_{U³} for all h ∈ QBohr. In particular, if A ⊂ Z_N has density α and ‖1_A - α‖_{U³} ≥ δ, then 1_A is 'quadratically ε-almost-periodic' on the Bohr set QBohr of quasipolynomial complexity.",
+        "status": "OPEN",
+        "density_increment_consequence": "If this lemma holds, then: 4-AP-free A ⊂ Z_N with density α either has ‖1_A - α‖_{U³} small (whence 4-AP counting gives a contradiction for α ≥ (some threshold)) or 1_A is quadratically almost-periodic on a long QBohr set, whence A has higher density on some sub-QBohr set → iterate. This iteration gives r_4(N) ≤ N · exp(-(log N)^c).",
+        "key_question_for_lovász": "What is the correct notion of '2-step nil-Bohr set' QBohr? How does T_h act on U² norms for h in a nil-Bohr set? Does the 2-torsion issue in 2-step nilmanifolds prevent this lemma from holding at quasipolynomial parameters?"
+      }
+    ],
+
+    "actual_lemma_queue_seed": [
+      {
+        "priority": 1,
+        "lemma": "U³-to-U² Almost-Periodicity (Weaker version of Quadratic CS)",
+        "statement": "If ‖f‖_{U³} ≥ δ, there exists h = h(f, δ) ∈ Z_N with |h| ≤ N^{1/2} and ‖T_h f - f‖_{U²} ≤ (1 - c·δ^C) · ‖f‖_{U³}. (This is a single translation that reduces U³ norm.)",
+        "significance": "Even a single 'good translate' h would initiate an iteration; if a polynomial number of such translates can be found, the density increment argument might work.",
+        "difficulty": "HARD but possibly more tractable than the full Quadratic CS Lemma"
+      },
+      {
+        "priority": 2,
+        "lemma": "Nil-Bohr Sets: Additive Structure",
+        "statement": "The 2-step nil-Bohr sets QBohr(G, ρ, d) are approximately closed under addition: QBohr + QBohr ⊆ QBohr' (a slightly dilated/shifted nil-Bohr set of the same rank). This 'quasi-group' structure is needed for the density increment iteration.",
+        "significance": "Classical Bohr sets Bohr(Γ, ρ) satisfy Bohr(Γ, ρ) + Bohr(Γ, ρ) ⊆ Bohr(Γ, 2ρ). The 2-step analogue is needed but its additive structure is more complex due to the nonabelian nature of 2-step nilpotent groups.",
+        "difficulty": "MEDIUM (this is likely in the literature; needs checking)"
+      }
+    ],
+
+    "counterexample_pressure": {
+      "primary_concern": "The '2-torsion problem' for k=4: in a 2-step nilmanifold G/Γ, the natural sub-progression of 4-APs has length N^{1/2}, and passing to sub-progressions of length N^{c} introduces losses of exp(-polylog) that negate the density increment. Whether this is a fundamental obstruction or a technical issue is UNKNOWN.",
+      "if_obstruction_is_real": "A formal proof that the 2-step nilsequence equidistribution on sub-progressions necessarily has losses of exp(-N^c) (not just exp(-polylog)) would show that the k=4 bound from the LSS approach is inherently double-logarithmic, not quasi-polynomial. This would mean a fundamentally NEW approach is needed for r_4(N)."
+    },
+
+    "lovász_success_criteria": [
+      "Precisely define '2-step nil-Bohr set' in a way compatible with the Croot–Sisask framework",
+      "Either prove or disprove: if ‖f‖_{U³} ≥ δ, ∃ h with ‖T_h f - f‖_{U²} ≤ (1-cδ^C)‖f‖_{U³}",
+      "Identify whether the 2-torsion obstruction is a fundamental barrier or a technical artifact",
+      "If the Quadratic CS Lemma is provable: produce a proof sketch with the key steps identified"
+    ]
+  },
+
+  "pipeline_notes": {
+    "for_lovász": "GAP1 is highest priority: analyze whether Kelley–Lyu's grid-norm improvement transfers to 3-APs. Focus on the Fourier formula Λ_3(A) = (1/N)Σ|Â|²Â̄(-2·) and whether |Â|² being non-negative gives L¹ spectral control with rank O(α^{-1}). GAP3 is second priority: precisely formulate the Quadratic Croot–Sisask Lemma and identify whether 2-torsion is a true obstruction.",
+    "for_generator": "After Lovász: send GAP2 (doubly-iterated Raghavan) and GAP5 (WIT sorry steps) to Generator. GAP2's barrier lemma (BL2) is more mechanical; GAP5's steps 5, 6, 7, 8 are tractable Lean 4 tasks.",
+    "from_explorer": "The most important structural observation from this Explorer run: the 3-AP Fourier formula Σ|Â(ξ)|² Â̄(-2ξ) has a BILINEAR STRUCTURE (it is a bilinear form between |Â|² and Â̄). This is the same type of bilinear form that Kelley–Lyu exploit with grid norms. The key question for Lovász is whether this bilinear structure is equivalent to a grid-norm in the Kelley–Lyu sense."
+  }
+}

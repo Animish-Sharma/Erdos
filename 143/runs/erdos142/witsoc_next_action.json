@@ -1,0 +1,38 @@
+{
+  "schema": "witsoc.next_action.v1",
+  "advisory": true,
+  "run_dir": "/home/xeclipse/.openscientist/worktrees/c31ad1/runs/erdos142",
+  "task": "erdos142",
+  "orchestrator_authority": "The orchestrator remains in charge; this packet recommends the next mathematical move.",
+  "target_status": "OPEN",
+  "current_gap": "GAP1 (Kelley–Lyu transfer): r_3(N) ≤ N·exp(-c(log N)^{1/2}). Key barrier: ℓ¹ vs ℓ² spectral normalization of 1_A in Croot–Sisask lemma. Explorer finding: |Spec_δ(1_A)| = O(α^{-1}) relative to ℓ¹ norm, vs O(α^{-2}) relative to ℓ² norm — if ℓ¹ suffices for density increment, exponent 1/3 follows immediately. GAP2 (doubly-iterated Raghavan): r_3(N) ≤ N·exp(-c(log N)^{1/3}) via m=4 sifting. GAP5 (WIT sorry closing): 4/12 steps done; steps 6, 8, 5 tractable.",
+  "next_action": "lovász",
+  "reason": "Explorer complete. Top barriers identified (BL1-GRID: ℓ¹ almost-periodicity question; BL3-QCS: Quadratic Croot–Sisask for k=4). Lovász needed for structural analysis before Generator can execute. In parallel: Generator should close WIT steps 6 (rk_le_N), 8 (rk_pos), 5 (rk_three_eq_rothNumberNat).",
+  "evaluator": "Lovász success: (A) proof that ℓ¹ normalization of 1_A gives rank O(α^{-1}) in density increment → exponent 1/3 for r_3(N), OR (B) van der Corput gives r_4(N) ≤ N·exp(-(log N)^{1/12}) from Raghavan; Generator success: 3 new sorry-free steps in lean/RkN.lean",
+  "artifact": {
+    "soc": "/home/xeclipse/.openscientist/worktrees/c31ad1/runs/erdos142/proofs/erdos142.soc",
+    "status_report": "/home/xeclipse/.openscientist/worktrees/c31ad1/runs/erdos142/reports/witsoc_status.md",
+    "handoff": "/home/xeclipse/.openscientist/worktrees/c31ad1/runs/erdos142/handoff.json"
+  },
+  "success_condition": "Lovász returns proof sketch or obstruction for BL1-GRID (ℓ¹ spectral normalization question) and BL3-QCS van Corput check; Generator closes WIT steps 6, 8, 5 without sorry",
+  "failure_route": "If Lovász cannot resolve BL1-GRID: pivot to GAP2 (send BL2: Doubly-Conditioned Almost-Periodicity to Generator as direct sifting task); if WIT steps fail: document Lean 4 HasKAP/ThreeAPFree definitional mismatch and escalate to Lovász",
+  "explorer_key_findings": {
+    "F1": "ℓ¹ spectrum of 1_A: |Spec_δ(1_A)| ≤ 1/(δ²α) = O(α^{-1}) [from ∑|Â(ξ)|²=αN, normalizing by f̂(0)=αN]",
+    "F2": "3-AP formula Λ₃(A) = (1/N)Σ_ξ|Â(ξ)|²Â̄(2ξ) has bilinear grid structure",
+    "F3": "Van der Corput might give r_4(N) ≤ N·exp(-(log N)^{1/12}) from Raghavan's r_3 bound",
+    "F4": "WIT steps 6 (rk_le_N) and 8 (rk_pos) are trivially provable without step 5"
+  },
+  "top_barrier_lemmas": {
+    "BL1_GRID": "L¹-Croot–Sisask: does non-negative 1_A give rank O(α^{-1})? Status: OPEN",
+    "BL2_DOUBLE_AP": "Doubly-Conditioned AP: does m=4 sifting give effective rank O(α^{-1})? Status: OPEN",
+    "BL3_QCS": "Quadratic Croot–Sisask for U³: nil-Bohr density increment for k=4. Status: OPEN",
+    "BL5_HASAP": "HasKAP A 3 ↔ ¬ThreeAPFree A in Lean 4. Status: TRACTABLE"
+  },
+  "required_run_products": [
+    "proofs/erdos142.wit or proofs/main.wit unless blocked",
+    "proofs/erdos142.soc",
+    "reports/witsoc_status.md",
+    "witsoc_next_action.json",
+    "proof_workflow.json"
+  ]
+}

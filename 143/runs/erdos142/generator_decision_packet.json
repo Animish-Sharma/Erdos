@@ -1,0 +1,88 @@
+{
+  "generator_session": "witsoc-generator",
+  "target": "Erdős Problem 142 — r_k(N) asymptotics WIT spec",
+  "timestamp": "2026-06-21",
+  "build_status": "SUCCESS",
+  "lean_toolchain": "leanprover/lean4:v4.31.0-rc1",
+
+  "steps_attempted": [6, 7, 8],
+  "steps_proved": [5, 6, 7, 8],
+  "steps_failed": [],
+
+  "notes": "Step 5 (rk_three_eq_rothNumberNat) was proved by the concurrent bridge worker (sess_ee9df00e) whose changes appeared in the file during this run. Steps 6, 7, 8 were proved in this session.",
+
+  "proof_summaries": {
+    "step_6_rk_le_N": {
+      "claim": "rk k N ≤ N",
+      "lean_theorem": "theorem rk_le_N (k N : ℕ) : rk k N ≤ N",
+      "proof_strategy": "unfold rk; letI := Classical.decPred _; exact Nat.findGreatest_le N",
+      "key_lemma": "Nat.findGreatest_le",
+      "status": "PROVED"
+    },
+    "step_7_rk_mono_N": {
+      "claim": "N ≤ M → rk k N ≤ rk k M",
+      "lean_theorem": "theorem rk_mono_N (k : ℕ) {N M : ℕ} (h : N ≤ M) : rk k N ≤ rk k M",
+      "proof_strategy": "unfold rk; letI for both predicates; apply Nat.findGreatest_mono; transport AP-free set via Finset.range_mono h",
+      "key_lemma": "Nat.findGreatest_mono + Finset.range_mono",
+      "status": "PROVED"
+    },
+    "step_8_rk_pos": {
+      "claim": "k ≥ 3 → N ≥ 1 → 0 < rk k N",
+      "lean_theorem": "theorem rk_pos (k : ℕ) (hk : 3 ≤ k) (N : ℕ) (hN : 1 ≤ N) : 0 < rk k N",
+      "proof_strategy": "exhibit singleton {0} ⊆ range N as k-AP-free witness (size 1); use Nat.le_findGreatest; ArithProg.not_hasKAP_singleton 0 (hk ≥ 2)",
+      "key_lemma": "Nat.le_findGreatest + ArithProg.not_hasKAP_singleton",
+      "status": "PROVED"
+    }
+  },
+
+  "implementation_notes": [
+    "Critical fix: use 'letI' (transparent let binding) not 'haveI' for DecidablePred instances, to avoid Classical.decPred opacity mismatch",
+    "For rk_mono_N, Nat.findGreatest_mono handles both predicate and bound change simultaneously",
+    "For rk_pos, ArithProg.not_hasKAP_singleton (k ≥ 2) is available from ArithmeticProgressions.lean",
+    "Step 5 proof (rk_three_eq_rothNumberNat) uses bridge: HasKAP A 3 ↔ ¬ThreeAPFree (A : Set ℕ), proved in detail in BridgeProofAttempt.lean and merged into RkN.lean"
+  ],
+
+  "lean_files_modified": [
+    "lean/RkN.lean"
+  ],
+
+  "wit_updates": "Steps 5-8 updated from [SORRY] to [DONE] in proofs/rk_asymptotics.wit. WIT file header updated to reflect PARTIAL status with 8/12 steps complete.",
+
+  "build_output_summary": {
+    "jobs": 8559,
+    "status": "Build completed successfully",
+    "remaining_sorries": [
+      "RkN.lean:szemeredi_theorem",
+      "RkN.lean:szemeredi_tendsto",
+      "RkN.lean:szemeredi_density_version",
+      "UpperBounds.lean (multiple)",
+      "ArithmeticProgressions.lean:hasKAP_three_iff_not_threeAPFree"
+    ]
+  },
+
+  "next_generator_targets": [
+    {
+      "step": 9,
+      "name": "szemeredi_theorem",
+      "claim": "∀ k ≥ 3, ∀ ε > 0, ∃ N₀, ∀ N ≥ N₀, rk k N / N < ε",
+      "difficulty": "hard",
+      "approach": "Requires bridge to Mathlib's Szemerédi theorem; needs rk_three_eq_rothNumberNat for k=3 case, but general k not in Mathlib",
+      "blocker": "General Szemerédi theorem not in Mathlib; might need to state as axiom or use FurstenbergWeiss"
+    },
+    {
+      "step": 10,
+      "name": "roth_theorem_1953",
+      "claim": "∃ c > 0, ∀ N ≥ 2, rk 3 N ≤ c * N / log(log N)",
+      "difficulty": "hard",
+      "approach": "Via rk_three_eq_rothNumberNat + Mathlib's rothNumberNat bounds if available",
+      "blocker": "Need to check if Mathlib has Roth's 1953 bound for rothNumberNat"
+    },
+    {
+      "step": "hasKAP_three_iff_not_threeAPFree",
+      "name": "ArithmeticProgressions bridge lemma",
+      "claim": "HasKAP A 3 ↔ ¬ThreeAPFree (A : Set ℕ)",
+      "difficulty": "medium",
+      "approach": "Already proved in BridgeProofAttempt.lean as hasKAP_three_iff_not_threeAPFree'; needs to be imported/merged into ArithmeticProgressions.lean"
+    }
+  ]
+}

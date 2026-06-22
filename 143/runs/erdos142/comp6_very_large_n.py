@@ -1,0 +1,275 @@
+#!/usr/bin/env python3
+"""
+comp6_very_large_n.py — Extend bad_frac + min_wfrac measurements to N=2500..5000
+
+Extends Erdős Problem 142 Conjecture 2 computational verification.
+
+Definitions:
+  A ⊆ {1,...,N}  4-AP-free (greedy, best of 2 random orderings)
+  M = |A|
+  A_d = fiber(A, d) = {x∈A : x+d∈A}
+  S   = popular differences = {d : |A_d| ≥ M²/(4N)}
+  T₃(B) = #{(a<b<c) : a,b,c∈B, a+c=2b}   (non-trivial 3-APs)
+  bad_frac    = #{d∈S : T₃(A_d)>0} / |S|
+  wfrac(d)    = |A_d| / max_{d'∈S}|A_{d'}|
+  min_wfrac   = min over T₃=0 witnesses d of wfrac(d)   (per trial)
+"""
+
+import random
+import sys
+import time
+from collections import Counter
+from statistics import mean, stdev
+
+# ── Greedy 4-AP-free construction ─────────────────────────────────────────────
+
+def creates_4ap(x, A_set, N):
+    """True if adding x to A_set (currently 4-AP-free) creates a 4-AP."""
+    # x is leftmost element of AP
+    d = 1
+    while x + 3 * d <= N:
+        if (x + d) in A_set and (x + 2 * d) in A_set and (x + 3 * d) in A_set:
+            return True
+        d += 1
+    # x is second element
+    d = 1
+    while x - d >= 1 and x + 2 * d <= N:
+        if (x - d) in A_set and (x + d) in A_set and (x + 2 * d) in A_set:
+            return True
+        d += 1
+    # x is third element
+    d = 1
+    while x - 2 * d >= 1 and x + d <= N:
+        if (x - 2 * d) in A_set and (x - d) in A_set and (x + d) in A_set:
+            return True
+        d += 1
+    # x is rightmost element
+    d = 1
+    while x - 3 * d >= 1:
+        if (x - 3 * d) in A_set and (x - 2 * d) in A_set and (x - d) in A_set:
+            return True
+        d += 1
+    return False
+
+
+def greedy_4ap_free(N, seed):
+    """Single greedy pass with random ordering."""
+    random.seed(seed)
+    order = list(range(1, N + 1))
+    random.shuffle(order)
+    A_set = set()
+    for x in order:
+        if not creates_4ap(x, A_set, N):
+            A_set.add(x)
+    return A_set
+
+
+def greedy_dense(N, restarts, seed_base):
+    """Run `restarts` greedy constructions, return the densest."""
+    best = set()
+    for r in range(restarts):
+        A = greedy_4ap_free(N, seed=seed_base + r * 997)
+        if len(A) > len(best):
+            best = A
+    return best
+
+
+# ── Fiber analysis ────────────────────────────────────────────────────────────
+
+def count_3aps(B_list, B_set):
+    """Count triples (a<b<c) with a+c=2b, all in B.  O(|B|²)."""
+    n = len(B_list)
+    if n < 3:
+        return 0
+    count = 0
+    for i in range(n):
+        a = B_list[i]
+        for j in range(i + 1, n):
+            b = B_list[j]
+            c = 2 * b - a
+            if c > b and c in B_set:
+                count += 1
+    return count
+
+
+def analyze_trial(A_set, N):
+    """
+    Returns dict:
+      bad_frac, max_popular, n_popular, witness_wfracs (list), M
+    Returns None if A is too small.
+    """
+    A_list = sorted(A_set)
+    M = len(A_list)
+    if M < 2:
+        return None
+    thr = M * M / (4.0 * N)
+
+    # ── Step 1: fiber sizes via pairwise differences  O(M²) ──────────────────
+    fiber_sizes = Counter()
+    for i in range(M):
+        x = A_list[i]
+        for j in range(i + 1, M):
+            fiber_sizes[A_list[j] - x] += 1
+
+    # ── Step 2: popular d's ───────────────────────────────────────────────────
+    popular_ds = [d for d, sz in fiber_sizes.items() if sz >= thr]
+    n_popular = len(popular_ds)
+    if n_popular == 0:
+        return None
+
+    # ── Step 3: for each popular d, count T₃  ────────────────────────────────
+    n_bad = 0
+    max_popular = 0
+    good_sizes = []   # sizes of T₃=0 witnesses
+
+    for d in popular_ds:
+        fiber = [x for x in A_list if (x + d) in A_set]
+        sz = len(fiber)
+        if sz > max_popular:
+            max_popular = sz
+        if count_3aps(fiber, set(fiber)) > 0:
+            n_bad += 1
+        else:
+            good_sizes.append(sz)
+
+    bad_frac = n_bad / n_popular
+
+    if max_popular > 0:
+        witness_wfracs = [sz / max_popular for sz in good_sizes]
+    else:
+        witness_wfracs = []
+
+    return dict(
+        bad_frac=bad_frac,
+        max_popular=max_popular,
+        n_popular=n_popular,
+        witness_wfracs=witness_wfracs,
+        n_witnesses=len(witness_wfracs),
+        M=M,
+    )
+
+
+# ── Per-N computation ─────────────────────────────────────────────────────────
+
+def run_N(N, trials, restarts=2, verbose=True):
+    """Run `trials` trials at given N.  Returns summary dict."""
+    t_start = time.time()
+    results = []
+    n_ce = 0
+
+    for trial in range(trials):
+        seed_base = trial * 101 + N * 17
+        A_set = greedy_dense(N, restarts=restarts, seed_base=seed_base)
+        r = analyze_trial(A_set, N)
+        if r is None:
+            continue
+        if r['n_witnesses'] == 0:
+            n_ce += 1
+            if verbose:
+                print(f"  *** C2-CE! N={N} trial={trial} |A|={r['M']} "
+                      f"bad_frac={r['bad_frac']:.4f}", flush=True)
+        results.append(r)
+        # Progress dot every 5 trials
+        if verbose and (trial + 1) % 5 == 0:
+            print(f".", end="", flush=True)
+
+    elapsed = time.time() - t_start
+
+    if not results:
+        return None
+
+    bad_fracs      = [r['bad_frac']      for r in results]
+    max_populars   = [r['max_popular']   for r in results]
+    Ms             = [r['M']             for r in results]
+    n_wit_list     = [r['n_witnesses']   for r in results]
+
+    # per-trial min wfrac (from trials that have witnesses)
+    per_trial_min = [min(r['witness_wfracs'])
+                     for r in results if r['witness_wfracs']]
+
+    return dict(
+        N=N,
+        trials=len(results),
+        n_ce=n_ce,
+        avg_bad_frac=mean(bad_fracs),
+        max_bad_frac=max(bad_fracs),
+        std_bad_frac=stdev(bad_fracs) if len(bad_fracs) > 1 else 0.0,
+        avg_min_wfrac=(mean(per_trial_min) if per_trial_min else float('nan')),
+        min_min_wfrac=(min(per_trial_min)  if per_trial_min else float('nan')),
+        max_min_wfrac=(max(per_trial_min)  if per_trial_min else float('nan')),
+        avg_witnesses=mean(n_wit_list),
+        min_witnesses=min(n_wit_list),
+        max_witnesses=max(n_wit_list),
+        avg_max_popular=mean(max_populars),
+        avg_M=mean(Ms),
+        elapsed=elapsed,
+    )
+
+
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+def main():
+    # N=2500,3000,3500 with 30 trials; N=4000,5000 with 20 trials
+    schedule = [
+        (2500, 30),
+        (3000, 30),
+        (3500, 30),
+        (4000, 20),
+        (5000, 20),
+    ]
+
+    t_global = time.time()
+    summaries = []
+
+    print("comp6_very_large_n: bad_frac + min_wfrac at N=2500..5000", flush=True)
+    print("=" * 115, flush=True)
+
+    hdr = (f"{'N':>5} | {'trials':>6} | {'avg_bf':>8} | {'max_bf':>8} | "
+           f"{'avg_mwf':>9} | {'range_mwf':>20} | {'avg_wit':>8} | "
+           f"{'avg_maxpop':>10} | {'avg_M':>7} | time")
+    print(hdr, flush=True)
+    print("-" * 115, flush=True)
+
+    for N, trials in schedule:
+        print(f"  [N={N}] running {trials} trials ", end="", flush=True)
+
+        s = run_N(N, trials=trials, restarts=2, verbose=True)
+
+        if s is None:
+            print(f" FAILED (no valid results)", flush=True)
+            continue
+
+        summaries.append(s)
+        rng = f"[{s['min_min_wfrac']:.4f},{s['max_min_wfrac']:.4f}]"
+        print(f"\r{s['N']:5d} | {s['trials']:6d} | {s['avg_bad_frac']:8.4f} | "
+              f"{s['max_bad_frac']:8.4f} | {s['avg_min_wfrac']:9.4f} | "
+              f"{rng:>20} | {s['avg_witnesses']:8.1f} | "
+              f"{s['avg_max_popular']:10.2f} | {s['avg_M']:7.2f} | {s['elapsed']:.1f}s",
+              flush=True)
+
+    total_elapsed = time.time() - t_global
+    print(f"\nTotal elapsed: {total_elapsed:.1f}s", flush=True)
+
+    # ── Print JSON-like summary for the markdown writer ──────────────────────
+    print("\n=== MACHINE-READABLE SUMMARY ===", flush=True)
+    for s in summaries:
+        print(f"N={s['N']} trials={s['trials']} avg_bad_frac={s['avg_bad_frac']:.6f} "
+              f"max_bad_frac={s['max_bad_frac']:.6f} "
+              f"avg_min_wfrac={s['avg_min_wfrac']:.6f} "
+              f"min_min_wfrac={s['min_min_wfrac']:.6f} "
+              f"max_min_wfrac={s['max_min_wfrac']:.6f} "
+              f"avg_witnesses={s['avg_witnesses']:.2f} "
+              f"min_witnesses={s['min_witnesses']} "
+              f"max_witnesses={s['max_witnesses']} "
+              f"avg_max_popular={s['avg_max_popular']:.2f} "
+              f"avg_M={s['avg_M']:.2f} "
+              f"n_ce={s['n_ce']} "
+              f"elapsed={s['elapsed']:.2f}",
+              flush=True)
+    print("=== END SUMMARY ===", flush=True)
+
+    return summaries
+
+
+if __name__ == '__main__':
+    main()

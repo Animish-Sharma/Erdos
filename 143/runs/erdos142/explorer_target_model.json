@@ -1,0 +1,410 @@
+{
+  "meta": {
+    "explorer_session": "witsoc-explorer",
+    "mission": "erdos142",
+    "pipeline_stage": "Explorer → Lovász",
+    "date": "2026-06-21",
+    "problem": "Erdős Problem 142: asymptotic formula for r_k(N)"
+  },
+  "gaps": [
+    {
+      "gap_id": "GAP1",
+      "label": "Kelley-Lyu Transfer Question",
+      "priority": "HIGHEST",
+      "frozen_target": {
+        "statement": "r_3(N) ≤ N · exp(−c(log N)^{1/2}) via Kelley–Lyu grid-norm sifting",
+        "quantified": "∃ c > 0, ∃ N₀, ∀ N ≥ N₀: r_3(N) ≤ N · exp(−c · (log N)^{1/2})",
+        "significance": "Would match Behrend lower bound exponent, resolving Level 2 of the problem"
+      },
+      "target_status": "OPEN",
+      "status_justification": "Kelley–Lyu (arXiv:2505.01587, 2026) proves exponent 1/2 in communication complexity using grid norm sifting. Whether this transfers to r_3(N) is the #1 open question as of June 2026. No transfer proof exists; no obstruction proof exists.",
+      "current_gap": {
+        "best_upper_bound": "N · exp(−c(log N)^{1/6} / log log N) [Raghavan 2026]",
+        "best_lower_bound": "N · exp(−C(log N)^{1/2}) [Behrend 1946, constant improved by Elsholtz–Hunter–Proske–Sauermann 2024]",
+        "exponent_gap": "1/6 (upper) vs 1/2 (lower) — factor of 3 in exponent"
+      },
+      "what_is_kelley_lyu": {
+        "arXiv": "2505.01587",
+        "title": "Sifting for grid norms in multiparty communication complexity",
+        "authors": "Kelley, Lyu",
+        "date": "May 2026",
+        "setting": "Bipartite / multiparty communication complexity — NOT arithmetic progressions directly",
+        "grid_norm_definition": "A 'grid norm' in communication complexity context: for a Boolean function f: X × Y → {0,1}, the grid norm measures correlation of f with tensor products f_1(x) ⊗ f_2(y) — structurally analogous to the U^2 Gowers norm but for bipartite functions over product domains",
+        "result": "Achieves sifting to exponent 1/2 in their specific setting (bipartite grid functions). Previously the ceiling was 1/3 using Kelley–Meka-style sifting.",
+        "shared_machinery": "Uses the SAME Croot–Sisask almost-periodicity lemma and sifting framework as Kelley–Meka 2023 for r_3(N)",
+        "key_innovation": "Exploits the bipartite (grid) structure to get stronger almost-periodicity with effective rank O(α^{-1}) instead of O(α^{-2})"
+      },
+      "structural_comparison_3ap_vs_grid": {
+        "3AP_incidence_graph": "The 3-AP incidence structure is {(a,b,c) : a + c = 2b} — a TRIPARTITE (3-uniform) hypergraph, not bipartite",
+        "grid_structure": "Kelley–Lyu's grid norm applies to BIPARTITE functions f: X × Y → {0,1}",
+        "mismatch": "The 3-AP tensor T(a,b,c) = 1[a+c=2b] · 1_A(a) · 1_A(b) · 1_A(c) lives in A⊗A⊗A (3-fold product), while grid norms are 2-fold products. This is a structural OBSTACLE.",
+        "potential_workaround": "By fixing b (the 'middle' element of the 3-AP) and thinking of the 3-AP as a BIPARTITE condition between (a,c) pairs with 2b as a 'label', one might reduce to a grid-norm setting. This is the key transfer question.",
+        "formal_question": "Is {(a,c) : a + c = 2b, a ∈ A, c ∈ A} a 'grid' for each b? Technically yes, but b runs over A too, creating dependencies."
+      },
+      "candidate_routes": [
+        {
+          "route_id": "R1a",
+          "name": "Direct bipartite reduction",
+          "description": "Reduce 3-AP counting to bipartite correlation: fix b, study the bipartite function f_b(a,c) = 1_A(a) · 1_A(c) · 1[a+c=2b]. Apply grid-norm sifting to each f_b, then sum over b.",
+          "obstacle": "The functions f_b are not independent (b varies over A); the summation introduces correlation terms that break the grid norm structure.",
+          "difficulty": "HARD"
+        },
+        {
+          "route_id": "R1b",
+          "name": "Grid-norm Croot–Sisask lemma for 3-APs",
+          "description": "Prove: 'If f: Z_N → [-1,1] with E[f] = α, there exists a Bohr set of rank O(α^{-1}) such that the BILINEAR form ⟨f, f * μ_B⟩ is large.' This would give rank O(α^{-1}) instead of O(α^{-2}).",
+          "obstacle": "Standard Croot–Sisask gives rank O(α^{-2}) from L² Fourier duality (Parseval bound |{ξ: |f̂(ξ)| ≥ εα²}| ≤ O(1/(ε²α²))). Getting O(α^{-1}) requires using L¹ Fourier duality instead.",
+          "difficulty": "MEDIUM-HARD",
+          "sub_requirement": "L¹-Croot-Sisask lemma"
+        },
+        {
+          "route_id": "R1c",
+          "name": "Kelley–Lyu direct adaptation",
+          "description": "Read arXiv:2505.01587 carefully; identify which lemmas are purely about grid norms and which use bipartite structure only as a lens. Port those lemmas to the 3-AP setting.",
+          "obstacle": "The bipartite structure in Kelley–Lyu may be essential (not just convenient). The 3-AP condition is symmetric in all three variables, not bipartite.",
+          "difficulty": "MEDIUM (analysis task) + HARD (porting)"
+        }
+      ],
+      "barrier_lemmas": [
+        {
+          "lemma_id": "BL1",
+          "name": "L¹-Almost-Periodicity Lemma (Grid version)",
+          "precise_statement": "Let f: Z_N → [-1,1] with ‖f‖₁ ≥ α (or equivalently E[f] = α). Then there exists a Bohr set B = Bohr(Γ, ρ) of rank d = O(α^{-1} · log(1/δ)) and radius ρ = Ω(1) such that ‖f * μ_B - f‖₁ ≤ δ · α. The set {ξ: |f̂(ξ)| ≥ δ·α} has at most O(α^{-1}/δ) elements (by L¹ Parseval / Hausdorff–Young).",
+          "status": "OPEN — not proved. The L² version (rank O(α^{-2})) is standard (Croot–Sisask 2010, Kelley–Meka 2023).",
+          "why_it_matters": "If true, this immediately gives exponent 1/(1·3) = 1/3 via the standard density-increment framework. If the L¹ version gives rank O(1) (independent of α), it would give exponent 1/2.",
+          "connection_to_kelley_lyu": "Kelley–Lyu's grid norm result suggests rank O(α^{-1}) is achievable in the bipartite setting. This lemma is the 'linear' version needed for 3-APs.",
+          "failed_approaches": [
+            "Direct Parseval argument for L¹ gives only |{ξ: |f̂(ξ)| ≥ t}| ≤ ‖f‖₁/t = α/t, but this requires f to be non-negative, not merely L¹",
+            "Orlicz norm approach (Rudin–Beurling) gives intermediate norms but not the sharp L¹ bound needed"
+          ]
+        }
+      ],
+      "counterexample_pressure": {
+        "main_obstruction": "The 3-AP incidence tensor is TRIPARTITE, not bipartite. Kelley–Lyu's approach exploits the 2-party structure of communication complexity (Alice has x, Bob has y). For 3-APs, there are 3 'parties' (a, b, c), making the direct transfer non-obvious.",
+        "potential_refutation": "If one can construct a function f: Z_N → [-1,1] with ‖f‖₂ = α such that any Bohr set on which f is almost-periodic requires rank ≥ Ω(α^{-2}), this would show the grid-norm improvement does NOT transfer and the ceiling is 1/3.",
+        "evidence_for_transfer": "The 3-AP condition a+c=2b can be written as a bilinear form after fixing b: (a,c) ↦ a+c-2b = 0. This bilinear structure is a grid condition, supporting the transfer hypothesis.",
+        "expert_consensus": "As of June 2026, no expert consensus on whether transfer is possible. The final_report.md identifies this as the #1 open question."
+      },
+      "evaluator": "Transfer is successful if: (a) a proof of r_3(N) ≤ N·exp(-c(log N)^{1/2}) is found, OR (b) a formal reduction of 3-AP sifting to a bipartite/grid-norm problem is established (even without the final bound), OR (c) an impossibility theorem showing rank ≥ Ω(α^{-2}) for 3-AP sifting (which would close the question negatively).",
+      "recommended_next": "LOVÁSZ — Send to Lovász for deep structural analysis of the bipartite reduction and the L¹-Croot–Sisask question. This is the highest-priority gap."
+    },
+    {
+      "gap_id": "GAP2",
+      "label": "Doubly-Iterated Raghavan",
+      "priority": "HIGH",
+      "frozen_target": {
+        "statement": "r_3(N) ≤ N · exp(−c(log N)^{1/3}) via 4-fold iterated sifting (m=4 in Sifting Hierarchy)",
+        "quantified": "∃ c > 0, ∃ N₀, ∀ N ≥ N₀: r_3(N) ≤ N · exp(−c · (log N)^{1/3})",
+        "significance": "Would double the current best exponent from 1/6 to 1/3; most tractable near-term target by expert consensus"
+      },
+      "target_status": "OPEN",
+      "status_justification": "The Sifting Hierarchy Formula f(m) = 1/(3(5-m)) is EMPIRICAL, not proved. Confirmed for m=1,2,3. Prediction for m=4 is a CONJECTURE. No published m=4 proof exists.",
+      "current_gap": {
+        "best_upper_bound": "N · exp(−c(log N)^{1/6} / log log N) [Raghavan 2026, arXiv:2603.27045]",
+        "predicted_next": "N · exp(−c(log N)^{1/3}) [doubly-iterated sifting, predicted by Sifting Hierarchy Formula]",
+        "key_question": "Is the Sifting Hierarchy Formula a theorem or just a coincidence?"
+      },
+      "sifting_hierarchy": {
+        "formula": "f(m) = 1/(3(5-m))",
+        "m1": {"method": "Kelley–Meka 2023", "exponent": "1/12 = 1/(3·4)", "status": "PROVED", "effective_rank_power": "ρ=4, i.e., rank O(α^{-4})"},
+        "m2": {"method": "Bloom–Sisask 2023", "exponent": "1/9 = 1/(3·3)", "status": "PROVED", "effective_rank_power": "ρ=3, i.e., rank O(α^{-3})"},
+        "m3": {"method": "Raghavan 2026", "exponent": "1/6 = 1/(3·2)", "status": "PROVED", "effective_rank_power": "ρ=2, i.e., rank O(α^{-2})"},
+        "m4": {"method": "doubly-iterated sifting", "exponent": "1/3 = 1/(3·1)", "status": "PREDICTED, NOT PROVED", "effective_rank_power": "ρ=1, i.e., rank O(α^{-1})"},
+        "formula_status": "CONJECTURAL — matches all known data points but has no independent proof. May be proved as a theorem about the iteration framework, or may break at m=4."
+      },
+      "raghavan_new_ingredient": {
+        "vs_bloom_sisask": "Bloom–Sisask (m=2) uses bootstrapped Croot–Sisask: apply lemma twice to reduce rank from O(α^{-6}) to O(α^{-4}). Raghavan (m=3) uses ITERATED sifting: apply the sifting procedure itself in a nested manner, reducing effective rank from O(α^{-4}) to O(α^{-2}).",
+        "raghavan_key_idea": "Raghavan's iterated sifting uses the 'conditioned density increment': after the first sifting step finds a Bohr set B₁, instead of passing to B₁ and resetting, he applies the sifting WITHIN the context of B₁, exploiting that the 'restricted function' A ∩ B₁ has additional almost-periodicity from the first step. This reduces the rank growth in the second level.",
+        "log_log_factor": "Raghavan's result has an extra (log log N)^{-1} factor in the exponent. This comes from Bohr set regularity lemma losing a log-log factor per iteration. Whether this is removable is an OPEN QUESTION (P1.2 in research priority list)."
+      },
+      "candidate_routes": [
+        {
+          "route_id": "R2a",
+          "name": "Doubly-iterated sifting (apply Raghavan 4th time)",
+          "description": "Apply Raghavan's iterated sifting once more (4th level): use A ∩ B₁ ∩ B₂ (doubly-conditioned function), exploit that two levels of conditioning reduce the effective rank further. Target: rank O(α^{-1}), giving exponent 1/(1·3) = 1/3.",
+          "key_lemma_needed": "Doubly-Iterated Almost-Periodicity: If f: G → [-1,1] is conditioned on B₁ (has almost-periodicity at level B₁) AND further conditioned on B₂ ⊂ B₁ (almost-periodic at level B₂), then the combined effective rank is O(α^{-1}), not O(α^{-2}).",
+          "obstacle": "It is NOT automatic that two levels of conditioning give rank O(α^{-1}). The rank might still be O(α^{-2}) at each level, giving total O(α^{-4}). The Raghavan argument shows HOW to get O(α^{-2}) from one level of conditioning — the question is whether a second level gets O(α^{-1}) by the same mechanism.",
+          "difficulty": "MEDIUM-HARD"
+        },
+        {
+          "route_id": "R2b",
+          "name": "L¹-almost-periodicity (different route to 1/3)",
+          "description": "Prove: If f: Z_N → [-1,1] with E[f] = α, ∃ Bohr set of rank O(α^{-1}) with L¹-almost-periodicity. This gives exponent 1/(1·3) = 1/3 by a different mechanism than R2a.",
+          "obstacle": "Same obstacle as GAP1 barrier lemma BL1. No proof known.",
+          "difficulty": "MEDIUM-HARD"
+        }
+      ],
+      "barrier_lemmas": [
+        {
+          "lemma_id": "BL2",
+          "name": "Doubly-Conditioned Almost-Periodicity",
+          "precise_statement": "Let B₁ = Bohr(Γ₁, ρ₁) be a Bohr set of rank d₁ = O(α^{-2}) on which f: Z_N → [-1,1] (with E[f] = α) is ε-almost-periodic at level ρ₁. Let B₂ = Bohr(Γ₂, ρ₂) ⊂ B₁ be a Bohr set of rank d₂ obtained by applying the Raghavan sifting argument to f restricted to B₁. Then: d₂ ≤ d₁ + O(α^{-1}) (NOT O(α^{-2}) extra).",
+          "status": "OPEN — this is the key claim in the doubly-iterated argument. Whether d₂ = d₁ + O(α^{-1}) or d₂ = d₁ + O(α^{-2}) determines whether exponent 1/3 or 1/6 is obtained.",
+          "why_key": "If d₂ = d₁ + O(α^{-1}), total rank is O(α^{-2}) + O(α^{-1}) = O(α^{-2}), which gives exponent 1/(2·3) = 1/6 (same as Raghavan). But if the EFFECTIVE rank (accounting for how the density increment uses rank) is O(α^{-1}), then exponent is 1/3.",
+          "subtlety": "The distinction between 'rank' and 'effective rank' is crucial. Raghavan achieves effective rank O(α^{-1}) from two Bohr sets of actual rank O(α^{-2}). A THIRD application might achieve effective rank O(1), giving exponent 1/(1·3) via the formula.",
+          "failed_approaches": [
+            "Directly repeating Raghavan's argument on B₂ gives rank d₂ = O(α^{-2}) again (rank does not automatically halve per level)",
+            "Using the 'conditioned density' argument for B₂ requires showing the function on B₂ behaves like a function of density α + Δ, but the Δ from the first step is too small to give an extra factor"
+          ]
+        }
+      ],
+      "counterexample_pressure": {
+        "main_question": "Is the Sifting Hierarchy Formula a theorem? Could f(4) ≠ 1/3?",
+        "potential_failure": "The formula f(m) = 1/(3(5-m)) might break at m=4 because: (1) the log-log factors accumulate; (2) the Bohr set regularity lemma has an extra loss at each level; (3) the 'effective rank' improvement might saturate at O(α^{-2}) regardless of iteration depth.",
+        "evidence_for": "The pattern 12, 9, 6 in denominators is strikingly arithmetic (difference -3 each time). This would be a remarkable coincidence if it broke at m=4.",
+        "evidence_against": "Raghavan achieved ρ=2 (the Croot–Sisask L² floor). Getting ρ=1 requires BREAKING the L² floor, which is the same obstacle as GAP1. The formula might simply reflect the L² barrier."
+      },
+      "evaluator": "Success: a proof of r_3(N) ≤ N·exp(-c(log N)^{1/3}) (or even r_3(N) ≤ N·exp(-c(log N)^{1/3} / (log log N)^C) with explicit C). Partial success: identifying the exact key lemma (barrier lemma BL2 with precise statement of why two-level conditioning gives rank O(α^{-1})). Failure indicator: proof that effective rank saturates at O(α^{-2}) under any number of iteration levels.",
+      "recommended_next": "GENERATOR — most tractable of all 5 gaps. The mathematical ingredients (Raghavan 2026 paper, Bloom–Sisask bootstrapping, Croot–Sisask lemma) are all available. A careful implementation of doubly-iterated sifting has realistic chance of success."
+    },
+    {
+      "gap_id": "GAP3",
+      "label": "k=4 Quasi-Polynomial Bound",
+      "priority": "MEDIUM",
+      "frozen_target": {
+        "statement": "r_4(N) ≤ N · exp(−(log N)^c) for some c > 0",
+        "quantified": "∃ c > 0, ∃ N₀, ∀ N ≥ N₀: r_4(N) ≤ N · exp(−(log N)^c)",
+        "significance": "Would be the k=4 analogue of Kelley–Meka (2023); first quasi-polynomial bound for 4-AP-free sets. Green–Tao 2017 gives only N/(log N)^c."
+      },
+      "target_status": "OPEN",
+      "status_justification": "Green–Tao (2017) is the current best with N(log N)^{-c}. No quasi-polynomial bound exists. The Leng–Sah–Sawhney quasipolynomial U³ inverse theorem (arXiv:2402.17994, 2024) provides a necessary but not sufficient ingredient.",
+      "current_gap": {
+        "best_upper_bound": "N · (log N)^{-c} [Green–Tao 2017, arXiv:1705.01703]",
+        "missing_ingredient": "Quadratic Croot–Sisask Lemma for U³ norm / 2-step nil-Bohr sets",
+        "why_lss_not_enough": "Leng–Sah–Sawhney proved the quasipolynomial U³ inverse theorem (needed for step 2 of density increment). But for k=4, step 3 (density increment on 2-step nilBohr sets) is missing. The 2-torsion complications in 2-step nilmanifolds prevent a direct analog of the k=3 Bohr-set density increment."
+      },
+      "lss_inverse_theorem_status": {
+        "proved_for_k4": "YES — Leng–Sah–Sawhney (arXiv:2402.17994, 2024) proved quasipolynomial bounds on U^{s+1}[N] inverse theorem for ALL s ≥ 1, including s=2 (U³, needed for k=4).",
+        "what_it_gives": "If ‖f‖_{U³[N]} ≥ δ, there exists a 2-step nilmanifold G/Γ of dimension d = O((log(1/δ))^C) such that |⟨f, F(g(n)Γ)⟩| ≥ exp(-O((log(1/δ))^C)).",
+        "what_is_missing": "The density increment step: given the nilsequence correlation, find a sub-progression (or nilBohr set) of polynomial length on which A has higher density."
+      },
+      "quadratic_croot_sisask_lemma": {
+        "name": "Quadratic Croot–Sisask Lemma for U³",
+        "precise_statement": "Let f: Z_N → [-1,1] with ‖f‖_{U³[N]} ≥ δ. Then there exists a '2-step nil-Bohr set' QBohr(Γ, ρ, Q) = {h ∈ Z_N : |⟨h, γ⟩| ≤ ρ for γ ∈ Γ, |Q(h)| ≤ σ for Q ∈ Q} of rank d = O((log 1/δ)^C) and degree-2 'quadratic frequencies' Q such that: ‖T_h f - f‖_{U²} ≤ ε‖f‖_{U³} for all h ∈ QBohr(Γ, ρ, Q).",
+        "status": "OPEN — not proved. The linear version (‖T_h f - f‖_{U¹} ≤ ε‖f‖_{U²} for h in Bohr set) is the standard Croot–Sisask lemma.",
+        "why_hard": "The U² norm involves quadratic structure; translates in h affect the quadratic phases non-trivially. The 2-step nilpotent group structure makes the iteration over h complicated — T_h f for h in a 2-step nil-Bohr set requires understanding how the nilsequence's phase changes under translation by elements of the nil-Bohr set."
+      },
+      "candidate_routes": [
+        {
+          "route_id": "R3a",
+          "name": "Quadratic almost-periodicity lemma (direct)",
+          "description": "Prove the Quadratic Croot–Sisask Lemma (stated above). Then use it in a density increment argument for 4-APs.",
+          "difficulty": "VERY HARD — this is a 3-10 year problem per the research strategy"
+        },
+        {
+          "route_id": "R3b",
+          "name": "Sparse density increment on nilBohr sets",
+          "description": "Instead of the full quadratic Croot–Sisask, prove: if A ⊂ Z_N has density α and no 4-APs, then either U³[A-α·1] is small (contradiction via counting) or there exists a nilBohr set of polynomial complexity on which A has density α + Ω((1/α)^{-C}).",
+          "difficulty": "HARD"
+        },
+        {
+          "route_id": "R3c",
+          "name": "U³ → U² reduction via structured sub-progressions",
+          "description": "Find sub-progressions P on which the 'quadratic part' of f vanishes, reducing U³ to U² behavior. Then apply k=3 methods.",
+          "difficulty": "HARD — the quadratic part typically does not vanish on sub-progressions"
+        }
+      ],
+      "barrier_lemmas": [
+        {
+          "lemma_id": "BL3",
+          "name": "Quadratic Croot–Sisask Lemma",
+          "precise_statement": "See candidate_routes R3a above.",
+          "status": "OPEN",
+          "failed_approaches": [
+            "Direct Fourier argument fails because U³ is not controlled by Fourier coefficients (quadratic phases don't have concentrated Fourier mass)",
+            "Griesmer–Green–Tao arithmetic regularity gives nilsequence decomposition but with tower-type bounds; Leng–Sah–Sawhney gives quasipolynomial but still misses the density increment step",
+            "Ergodic theory approach (Bergelson–Leibman 1996) gives qualitative 4-AP existence but no quantitative bounds"
+          ]
+        }
+      ],
+      "counterexample_pressure": {
+        "main_concern": "The 2-torsion problem in 2-step nilmanifolds: for a 2-step nilmanifold G/Γ, the group law involves commutators [g,h] = ghg^{-1}h^{-1}. When restricted to even N, the 2-step structure can create 'quadratic carry' issues in the density increment (halving of commutators). This is the structural reason k=4 does not follow from k=5.",
+        "is_2torsion_fatal": "NOT NECESSARILY fatal for all approaches. It specifically affects Leng–Sah–Sawhney's equidistribution argument. The Quadratic Croot–Sisask approach via QBohr sets might avoid the 2-torsion issue."
+      },
+      "evaluator": "Success: any proof with r_4(N) ≤ N·exp(-(log N)^c) for any c > 0. Even c = 10^{-6} would be a landmark breakthrough. Partial success: proving the Quadratic Croot–Sisask Lemma independently of r_4(N) applications.",
+      "recommended_next": "LOVÁSZ — second priority after GAP1. Send quadratic Croot–Sisask lemma as a Lovász target."
+    },
+    {
+      "gap_id": "GAP4",
+      "label": "Rankin Tightness for k=5",
+      "priority": "MEDIUM-LOW",
+      "frozen_target": {
+        "statement": "r_5(N) = N · exp(−Θ((log N)^{1/3}))",
+        "quantified_upper": "∃ c > 0, ∃ N₀, ∀ N ≥ N₀: r_5(N) ≤ N · exp(−c · (log N)^{1/3})",
+        "quantified_lower": "∃ C > 0, ∀ N ≥ 1: r_5(N) ≥ N · exp(−C · (log N)^{1/3}) [ALREADY KNOWN: Rankin 1961]",
+        "significance": "Would show Rankin's 1961 construction is tight; give the first quasi-polynomial upper bound for r_5(N)"
+      },
+      "target_status": "OPEN",
+      "status_justification": "Lower bound is KNOWN [Rankin 1961]. Upper bound is extremely weak: Leng–Sah–Sawhney 2024 gives N·exp(-(log log N)^{c_5}), which is far weaker than N·exp(-(log N)^{1/3}). The gap is qualitative.",
+      "current_gap": {
+        "best_upper_bound": "N · exp(−(log log N)^{c_5}) [Leng–Sah–Sawhney 2024, arXiv:2402.17995]",
+        "lower_bound": "N · exp(−C_5 · (log N)^{1/3}) [Rankin 1961]",
+        "gap_size": "ENORMOUS — the upper bound has a double-logarithm where the lower bound has a logarithm; this is a qualitative gap"
+      },
+      "rankin_construction": {
+        "idea": "5-AP-free sets in {1,...,N} via sphere constructions in high-dimensional lattices. Rankin uses a dimension d ~ (log N)^{1/3} (not ~ (log N)^{1/2} as in Behrend) because the sphere condition for 5 points is more restrictive.",
+        "why_1_3": "The exponent 1/3 arises because: a 5-AP (a, a+d, a+2d, a+3d, a+4d) on a sphere S_R requires checking that all 5 points lie on the sphere. The system of equations has 4 constraints (from ‖a+id‖ = √R for i=1,2,3,4), determining d uniquely as 0. The optimal dimension balancing the number of lattice points on S_R vs. density gives d ~ (log N)^{1/3}."
+      },
+      "is_rankin_tight": {
+        "evidence_for": "Rankin's construction is the best known lower bound for k=5. The exponent 1/3 beats Behrend's 1/2 for k=5 (1/3 < 1/2 means the lower bound density is higher — fewer constraints). No construction giving density N·exp(-c(log N)^α) for α < 1/3 is known.",
+        "evidence_against": "There is NO structural reason the Rankin lower bound is tight. The Behrend sphere is 5-AP-free (a sphere also has no 5-APs) and gives density N·exp(-c(log N)^{1/2}) > Rankin. Wait — Rankin gives HIGHER density (exponent 1/3 < 1/2, so exp(-c(log N)^{1/3}) > exp(-c(log N)^{1/2})). So Rankin is actually BETTER (larger) than Behrend for r_5(N). The upper bound needs to match the lower bound from above.",
+        "key_question": "Can the upper bound be brought down from exp(-(log log N)^{c_5}) to exp(-(log N)^{1/3})? This requires new ideas beyond Leng–Sah–Sawhney."
+      },
+      "comparison_with_k3": {
+        "k3_situation": "For k=3: upper bound exponent 1/6, lower bound exponent 1/2. The upper bound is WEAKER (smaller exponent = larger set allowed). To close gap, need to IMPROVE upper bound (increase exponent toward 1/2).",
+        "k5_situation": "For k=5: upper bound exp(-(log log N)^{c_5}) [essentially exponent 0], lower bound exponent 1/3. Same qualitative situation: upper bound much weaker. To close gap, need to increase upper bound exponent to 1/3."
+      },
+      "candidate_routes": [
+        {
+          "route_id": "R4a",
+          "name": "Higher-order sifting via U⁴ inverse theorem",
+          "description": "Use the Leng–Sah–Sawhney U⁴ inverse theorem (for k=5) with a sifting argument analogous to Kelley–Meka. The current LSS bound uses equidistribution and iteration; a sifting-based approach might give quasi-polynomial bounds.",
+          "difficulty": "VERY HARD — the U⁴ inverse theorem involves 3-step nilsequences, which are much more complicated than the 2-step ones appearing for k=4."
+        }
+      ],
+      "barrier_lemmas": [
+        {
+          "lemma_id": "BL4",
+          "name": "Cubic Almost-Periodicity Lemma (for U⁴, k=5)",
+          "precise_statement": "If ‖f‖_{U⁴[N]} ≥ δ, there exists a 3-step nil-Bohr set of quasipolynomial complexity on which f is 'U³-almost-periodic.' The density increment on this nil-Bohr set gives r_5(N) ≤ N·exp(-(log N)^{c_5}) for some c_5 > 0.",
+          "status": "OPEN — would be even harder than the Quadratic Croot–Sisask Lemma (BL3). Not a near-term target."
+        }
+      ],
+      "counterexample_pressure": {
+        "concern": "The gap between upper and lower bounds is so large that the focus should be on ANY quasi-polynomial upper bound for r_5(N), not specifically the Rankin exponent 1/3."
+      },
+      "evaluator": "Success: r_5(N) ≤ N·exp(-(log N)^c) for any c > 0. Partial: r_5(N) ≤ N·exp(-f(N)) where f(N)/log log N → ∞.",
+      "recommended_next": "MONITOR — low priority. Focus on GAP1 and GAP2 first. GAP4 requires first solving a GAP3-type problem for k=5 (no quasi-polynomial bound yet exists)."
+    },
+    {
+      "gap_id": "GAP5",
+      "label": "WIT Sorry Closing",
+      "priority": "HIGH (for formalization track)",
+      "frozen_target": {
+        "statement": "Prove at least 3 more steps in proofs/rk_asymptotics.wit without sorry, giving 7+ DONE steps out of 12",
+        "file": "proofs/rk_asymptotics.wit",
+        "current_state": "4 DONE steps, 8 SORRY steps"
+      },
+      "target_status": "PARTIAL",
+      "status_justification": "4 steps already DONE (definitions and card_AP_image). 8 steps remain sorry'd. Several of the sorry'd steps (rk_le_N, rk_pos, rk_mono_N) are provable using existing Mathlib, once rk_three_eq_rothNumberNat is established.",
+      "done_steps": [
+        "1. [DONE] Define IsArithmeticProgression",
+        "2. [DONE] Define HasKAP",
+        "3. [DONE] Prove card_AP_image (AP with d>0 has exactly k elements)",
+        "4. [DONE] Define rk via Nat.findGreatest"
+      ],
+      "sorry_steps_analysis": [
+        {
+          "step": 5,
+          "name": "rk_three_eq_rothNumberNat",
+          "statement": "rk 3 N = rothNumberNat N",
+          "status": "MOST IMPORTANT sorry step",
+          "provability": "MEDIUM — requires showing the two definitions agree: (a) rk 3 N = max{|A|: A ⊆ range N, ¬HasKAP A 3}, (b) rothNumberNat N = max{|A|: A ⊆ range N, ThreeAPFree A}. These agree iff HasKAP A 3 ↔ ¬ThreeAPFree A, which is a definitional unwinding.",
+          "key_sublemma": "hasKAP_three_iff_not_threeAPFree: HasKAP A 3 ↔ ¬ThreeAPFree (A : Set ℕ). Provable by unfolding definitions: HasKAP says ∃ B ⊆ A with IsArithmeticProgression B 3, which means ∃ a d > 0 with {a, a+d, a+2d} ⊆ A; ThreeAPFree says ∀ a b c ∈ A, a + c ≠ 2b ∨ a = b ∨ b = c.",
+          "mathlib_support": "Mathlib has ThreeAPFree, rothNumberNat, AddSalemSpencer. The connection should be provable from Mathlib's API.",
+          "recommended_for_generator": "YES"
+        },
+        {
+          "step": 6,
+          "name": "rk_le_N",
+          "statement": "rk k N ≤ N",
+          "status": "SHOULD BE EASY after step 5",
+          "provability": "HIGH — Nat.findGreatest N P ≤ N is immediate from the definition of findGreatest. Can be proved INDEPENDENTLY of step 5.",
+          "recommended_for_generator": "YES — this is a trivial bound provable directly"
+        },
+        {
+          "step": 7,
+          "name": "rk_mono_N",
+          "statement": "N ≤ M → rk k N ≤ rk k M",
+          "status": "MEDIUM after step 5",
+          "provability": "MEDIUM — requires showing that a k-AP-free subset of {0,...,N-1} is also a subset of {0,...,M-1}. Standard Finset argument: Finset.range N ⊆ Finset.range M when N ≤ M.",
+          "recommended_for_generator": "YES"
+        },
+        {
+          "step": 8,
+          "name": "rk_pos",
+          "statement": "k ≥ 3 → N ≥ 1 → 0 < rk k N",
+          "status": "SHOULD BE EASY",
+          "provability": "HIGH — The singleton {0} ⊂ {0,...,N-1} is k-AP-free (trivially), so rk k N ≥ 1. Just need to exhibit a k-AP-free set of size ≥ 1.",
+          "recommended_for_generator": "YES"
+        },
+        {
+          "step": 9,
+          "name": "szemeredi_theorem",
+          "statement": "∀ k ≥ 3, ∀ ε > 0, ∃ N₀, ∀ N ≥ N₀, rk k N / N < ε",
+          "status": "HARD — depends on step 5 + Mathlib's Szemerédi",
+          "provability": "MEDIUM (via Mathlib) — Mathlib likely has Finset.rothNumberNat.tendsto (tendsto 0). After step 5 (rk_three_eq_rothNumberNat), the k=3 case follows from Mathlib. For general k, need to check Mathlib's coverage.",
+          "mathlib_note": "Mathlib has SzemerediRegularity and basic Szemerédi, but quantitative rates are not in Mathlib. The qualitative tendsto might be there.",
+          "recommended_for_generator": "PARTIAL — send only k=3 case after step 5"
+        },
+        {
+          "step": 10,
+          "name": "roth_theorem_1953",
+          "statement": "∃ c > 0, ∀ N ≥ 2, rk 3 N ≤ c * N / log(log N)",
+          "status": "HARD — no quantitative Roth in Mathlib",
+          "provability": "LOW — quantitative Roth (N/log log N bound) is not in Mathlib 4.x. Would require adding it or sorry-ing.",
+          "recommended_for_generator": "NO — too hard, remain SORRY"
+        },
+        {
+          "step": 11,
+          "name": "behrend_lower_bound",
+          "statement": "∃ C > 0, ∀ N ≥ 1, N * exp(-C*√(log N)) ≤ rk 3 N",
+          "status": "DEPENDS ON step 5 — Mathlib has Behrend.roth_lower_bound for rothNumberNat",
+          "provability": "HIGH after step 5 — behrend_lower_bound_via_mathlib already stated in UpperBounds.lean; proof is 2 lines (rk_three_eq_rothNumberNat + Behrend.roth_lower_bound). The blocking sorry is step 5.",
+          "recommended_for_generator": "YES — after step 5 is proved"
+        },
+        {
+          "step": 12,
+          "name": "kelley_meka_2023",
+          "statement": "∃ c > 0, ∃ N₀, ∀ N ≥ N₀, rk 3 N ≤ N * exp(-c*(log N)^(1/9))",
+          "status": "IMPOSSIBLE in Lean without sorry — the full Kelley–Meka proof is not in Mathlib",
+          "provability": "LOW — Kelley–Meka is not formalized in Lean/Mathlib as of June 2026. Would require a massive formalization effort.",
+          "recommended_for_generator": "NO — remain SORRY"
+        }
+      ],
+      "priority_order_for_generator": [
+        "Step 6 (rk_le_N) — trivial, provable independently",
+        "Step 8 (rk_pos) — easy, provable independently",
+        "Step 5 (rk_three_eq_rothNumberNat) — hardest but most impactful; unlocks steps 11 and 9",
+        "Step 7 (rk_mono_N) — easy after step 5",
+        "Step 11 (behrend_lower_bound) — trivial after step 5"
+      ],
+      "candidate_routes": [
+        {
+          "route_id": "R5a",
+          "name": "Prove rk_le_N and rk_pos directly",
+          "description": "These steps don't require rk_three_eq_rothNumberNat. rk_le_N follows from Nat.findGreatest ≤ N; rk_pos follows from exhibiting {0} as a k-AP-free subset.",
+          "difficulty": "EASY"
+        },
+        {
+          "route_id": "R5b",
+          "name": "Prove rk_three_eq_rothNumberNat via definitional unfolding",
+          "description": "Unfold both definitions and show they compute the same value. Key: show HasKAP A 3 ↔ ¬ThreeAPFree A, then use extensionality of Nat.findGreatest.",
+          "difficulty": "MEDIUM"
+        }
+      ],
+      "barrier_lemmas": [
+        {
+          "lemma_id": "BL5",
+          "name": "HasKAP-ThreeAPFree Equivalence",
+          "precise_statement": "HasKAP A 3 ↔ ¬ThreeAPFree (A : Set ℕ), where HasKAP A 3 := ∃ B ⊆ A, IsArithmeticProgression B 3 (with d > 0 implicit), and ThreeAPFree S := ∀ a ∈ S, ∀ b ∈ S, ∀ c ∈ S, a + c = 2 * b → a = b ∧ b = c.",
+          "status": "OPEN but TRACTABLE — requires careful Lean 4 definitional unfolding. The mathematical content is straightforward.",
+          "key_obstacle": "Lean 4 definitional details: (a) IsArithmeticProgression uses image of range k; (b) ThreeAPFree in Mathlib uses a different but equivalent characterization; (c) the 'nontrivial' condition (d > 0) must be correctly matched."
+        }
+      ],
+      "counterexample_pressure": {
+        "concern": "If Mathlib's ThreeAPFree includes trivial APs (d=0), the equivalence might fail. Need to check Mathlib's exact definition.",
+        "resolution": "In Mathlib, ThreeAPFree includes the condition a + c = 2b → a = b ∧ b = c, which forces d = 0 → trivial. The nontrivial condition is handled by the conclusion being a = b = c (the trivial AP). So the equivalence should hold with d > 0 being the 'nontrivial' condition in IsArithmeticProgression."
+      },
+      "evaluator": "Success: 3+ new steps proved without sorry (e.g., steps 6, 8, and one of {5, 7, 11}). Full success: steps 5, 6, 7, 8, 11 all proved (5 new steps), reducing sorry count from 8 to 3.",
+      "recommended_next": "GENERATOR — send steps 5, 6, 7, 8 to Generator for Lean 4 proof construction"
+    }
+  ],
+  "tractability_ranking": [
+    {"rank": 1, "gap_id": "GAP5", "label": "WIT Sorry Closing", "reason": "Steps 6 and 8 are trivially provable. Step 5 requires careful definitional work but is tractable with Mathlib."},
+    {"rank": 2, "gap_id": "GAP2", "label": "Doubly-Iterated Raghavan", "reason": "Mathematical ingredients available; 1-3 year timeline per experts. Most concrete path to new mathematics."},
+    {"rank": 3, "gap_id": "GAP1", "label": "Kelley-Lyu Transfer", "reason": "High potential payoff (exponent 1/2) but requires understanding a very recent paper and a structural comparison that may or may not work."},
+    {"rank": 4, "gap_id": "GAP3", "label": "k=4 Quasi-Polynomial", "reason": "3-10 year timeline. Key lemma (Quadratic Croot-Sisask) is well-defined but hard."},
+    {"rank": 5, "gap_id": "GAP4", "label": "Rankin Tightness k=5", "reason": "No clear near-term approach. Would require solving a GAP3-type problem first."}
+  ]
+}
