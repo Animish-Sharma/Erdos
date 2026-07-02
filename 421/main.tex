@@ -1,0 +1,1403 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+\hypersetup{
+  pdftitle={A dense sequence with distinct products of consecutive blocks},
+  pdfauthor={Fuzzy Dynamics}
+}
+
+\title{A dense sequence with distinct products of consecutive blocks}
+\author{Fuzzy Dynamics}
+\date{\today}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{external}[theorem]{External input}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\A}{\mathbb A}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\pplus}{P^+}
+\newcommand{\floor}[1]{\left\lfloor #1\right\rfloor}
+\newcommand{\ceil}[1]{\left\lceil #1\right\rceil}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\1}{\mathbf 1}
+\DeclareMathOperator{\rad}{rad}
+\DeclareMathOperator{\height}{ht}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We construct a set \(A\subset\N\) of natural density one whose increasing
+enumeration \(d_1<d_2<\cdots\) has the property that the products over finite
+consecutive blocks are all distinct.  The set is produced by a greedy
+algorithm, modified by a deterministic deletion set of density zero.  The role
+of this deletion set is to convert the semiprimes supplied by the
+Matom\"aki--Ter\"av\"ainen theorem into private barriers: short obstructions
+carrying a globally unique large prime.  Once a few density-zero exceptional
+families are discarded, the barriers confine each surviving collision to a
+polylogarithmic window, and the resulting product identities carry many
+large-prime congruences of shifted-CRT type.  A low-degree auxiliary
+polynomial interpolating the local data is then forced to vanish at the global
+collision point.  Its nonlinear components are counted by the
+Castryck--Cluckers--Dittmann--Nguyen affine-curve bound, and its line
+components directly from the curvature of \(q^\theta\).  The outcome is
+\(o(X)\) surviving collision endpoints in each dyadic shell \((X,2X]\), and
+hence a density-one set with distinct consecutive-block products.
+\end{abstract}
+
+\medskip
+\noindent\emph{2020 Mathematics Subject Classification.}
+Primary 11B75; Secondary 11N25, 11N35, 11D45.
+
+\smallskip
+\noindent\emph{Key words and phrases.}
+Distinct products, consecutive blocks, natural density, greedy construction,
+smooth numbers, determinant method, Erd\H{o}s problems.
+
+\section{Introduction}
+
+An increasing sequence of positive integers assigns to each finite interval of
+indices the product of the corresponding terms, and one may ask how rigidly
+those block products pin down the interval.  For an increasing sequence
+\(d_1<d_2<\cdots\), write
+\[
+  P_d(u,v)=\prod_{i=u}^v d_i \qquad (1\le u\le v).
+\]
+Say that the sequence has \emph{distinct consecutive-block products} if
+\[
+  P_d(u,v)=P_d(u',v') \quad\Longrightarrow\quad (u,v)=(u',v')
+\]
+for all finite index intervals, so that no two different blocks share a
+product.  Such rigidity is easy to arrange in a thin sequence; the question is
+how dense one can make it.  Erd\H{o}s asked whether it is compatible with
+natural density one.  This is Problem 421 in the Erd\H{o}s problem collection
+\cite{Bloom421}, going back to the problem list of Erd\H{o}s and Graham
+\cite{ErGr80}.
+
+\begin{theorem}\label{thm:main}
+There exists a strictly increasing sequence
+\[
+  1\le d_1<d_2<\cdots
+\]
+whose underlying set has natural density \(1\), and for which the products
+\(\prod_{i=u}^v d_i\) are all distinct as \((u,v)\) ranges over finite
+consecutive intervals.
+\end{theorem}
+
+Our argument is self-contained except for the external results collected in
+Section~\ref{sec:inputs}.  The sequence is built greedily, with one
+modification.  We fix in advance a deterministic set \(D\) of density zero,
+reject every integer of \(D\) outright, accept \(2\), and accept each later
+integer outside \(D\) precisely when doing so creates no new coincidence among
+consecutive-block products.  Uniqueness is then automatic from the greedy
+rule, and the whole difficulty lies in showing that the rejected integers --
+those forced by \(D\) together with those the greedy test discards -- still
+form a set of density zero.
+
+To locate that difficulty, suppose an integer \(n\notin D\) is rejected.  Then
+adjoining \(n\) produces a collision, and a short analysis
+(Lemma~\ref{lem:witness-split}) shows that the collision is always an
+\emph{old-new witness}
+\[
+  P=nS,
+\]
+in which \(P\) is a block product already present and \(S\) is a product of
+the most recent accepted terms, possibly empty.  When \(S=1\), the integer
+\(n\) is itself an old block product, and such \(n\) are sparse for elementary
+reasons.  The genuine obstruction is the case \(S>1\): here \(P\) may be long
+and may sit far to the left of the suffix, so no direct count is available.
+The set \(D\) is designed precisely to force almost every such witness into a
+short window, where it can be counted.
+
+This window is produced by what we call a \emph{barrier system}.  In most blocks
+of polylogarithmic length we single out one semiprime \(b=p_1p_2\) with
+\((\log b)^{1.08}<p_1\le(\log b)^{1.1}\) whose large prime factor \(p_2\) is
+globally unique among our choices, and we delete every other multiple of
+\(p_2\) up to a long but finite horizon.
+
+Two properties make this effective.  A selected barrier survives the greedy
+scan, because any new product through it inherits the private prime \(p_2\)
+that no earlier product can carry; hence the barrier is accepted.  And once a
+barrier is in place, no surviving collision can have its old block cross it,
+unless the endpoint has already passed the barrier's horizon.  The integers
+beyond their horizon make up a smooth family of density zero, removed
+separately.
+
+With the barriers in place, every nonempty collision left in a shell
+\((X,2X]\) has a short, tightly controlled witness
+\[
+  \prod_{i=1}^{\ell}(x-a_i)=\prod_{j=1}^{b}(q+c_j),
+  \qquad 0\le a_i,\, c_j \le (\log X)^{O(1)},
+\]
+with \(x<q<n\le 2X\), \(q\) a previously selected barrier, and
+\[
+  x=q^{b/\ell}+O((\log X)^B),\qquad
+  (\log X)^{-B}\le 1-\frac b\ell \ll \frac{\log\log X}{\log X}.
+\]
+All the shifts \(a_i,c_j\) are now bounded by a fixed power of \(\log X\), and
+the argument becomes arithmetic.  A large prime dividing a factor on the left
+must reappear among the terminal factors on the right, and matching these
+yields many congruences
+\[
+  p_i\mid x-a_i,\qquad p_i\mid q-x+a_i+c_i,
+\]
+with distinct \(p_i>\exp(\log X/(\log\log X)^2)\).  A low-degree auxiliary
+polynomial that vanishes on the local points \((a_i,a_i+c_i)\) is therefore
+forced to vanish at the global point \((x,x-q)\) as well.  Its nonlinear
+components are counted by the affine-curve determinant-method theorem of
+Castryck--Cluckers--Dittmann--Nguyen, while its line components are handled
+directly, through the strict curvature of \(q^\theta\) for \(\theta<1\).
+
+The paper is organized as follows.  Section~\ref{sec:inputs} fixes the
+external inputs and notation.  Section~\ref{sec:greedy} records the formal
+greedy reduction and disposes of empty-suffix collisions.
+Section~\ref{sec:barriers} constructs the barrier system.
+Sections~\ref{sec:localization} and~\ref{sec:terminal} turn the barrier
+information into localized product identities and then into terminal
+large-prime support.  Section~\ref{sec:slab} proves the shifted-CRT counting
+proposition.  Section~\ref{sec:nonempty} applies it to all remaining nonempty
+rejections, and Section~\ref{sec:main-proof} completes the density argument.
+
+\section{External Inputs and Notation}\label{sec:inputs}
+
+All logarithms are natural, except \(\log_2\).  Constants implicit in
+\(O(\cdot)\), \(o(\cdot)\), and \(\ll\) may depend on the fixed constants
+chosen in the proof, but not on the dyadic parameter \(X\).  A \emph{dyadic
+shell} means \((X,2X]\), with \(X\) a sufficiently large power of two.
+For an integer \(m\ge2\), let \(\pplus(m)\) be its largest prime factor.  Let
+\[
+  \Psi(X,Y)=\#\{m\le X:\pplus(m)\le Y\}.
+\]
+
+\begin{external}[Matom\"aki--Ter\"av\"ainen \(E_2\) theorem \cite{MT}]\label{inp:MT}
+There are constants \(c_0,\delta>0\) such that, for all sufficiently large
+\(X\), all but \(O(X/(\log X)^\delta)\) integer starts \(2\le y\le X\) satisfy
+\[
+\#\left\{p_1p_2\in (y,y+(\log y)^{2.1}]:
+\begin{array}{c}
+p_1,p_2\ {\rm prime},\\
+(\log y)^{1.09}<p_1\le(\log y)^{1.1}
+\end{array}\right\}
+\ge c_0(\log y)^{1.1}.
+\]
+\end{external}
+
+\begin{external}[de Bruijn--Dickman smooth-number estimate
+\cite{deBruijn,Hildebrand}]\label{inp:dickman}
+Uniformly for \(u=u(N)\to\infty\) with \(u=O(\sqrt{\log\log N})\),
+\[
+  \Psi(N,N^{1/u})\le
+  N\exp\big(-(1+o(1))u\log u\big).
+\]
+\end{external}
+
+\begin{external}[CCDN affine-curve bound \cite{CCDN}]\label{inp:CCDN}
+For every fixed ambient dimension \(n>1\), there is a constant \(C_n\) such
+that, for every \(B\ge1\), every integral affine curve \(V\subset\A^n_{\Q}\) of
+positive degree \(d\) satisfies
+\[
+  \#\{z\in V(\Z):\height(z)\le B\}
+  \le C_n d^3 B^{1/d}(\log B+d).
+\]
+Here \(\height(z)=\max_i |z_i|\) for \(z=(z_1,\ldots,z_n)\in\Z^n\).
+The constant \(C_n\) is independent of \(d\), \(B\), and the defining
+equations of \(V\); the displayed factor is the only degree-dependence used
+below.
+\end{external}
+
+\begin{external}[Mignotte factor inequality \cite{Mignotte}]\label{inp:mignotte}
+If \(f,g\in\Z[z]\) are nonzero, \(\deg g\le d\), and \(g\) is a multiple of
+\(f\), then
+\[
+  \norm{g}_2\ge 2^{-d}\norm{f}_\infty .
+\]
+\end{external}
+
+We also use the following standard elementary facts: Bertrand's postulate,
+Chebyshev upper and lower prime-counting bounds, Gauss's lemma for primitive
+factors over \(\Q\) and \(\Z\), the usual compatibility of primitive
+homogenization and dehomogenization for line factors, Galois conjugacy of
+absolute factors of a squarefree \(\Q\)-irreducible plane curve, and Bezout's
+\(d_1d_2\) bound for two coprime plane curves of degrees \(d_1,d_2\).
+
+\section{The Modified Greedy Reduction}\label{sec:greedy}
+
+It is convenient to isolate the purely formal consequences of the greedy rule
+from the number-theoretic construction of \(D\), which is deferred to
+Section~\ref{sec:barriers}.  Granting that \(D\) has density zero, the only
+rejections that will demand real work are the nonempty old-new collisions
+introduced below.
+
+\begin{definition}[Modified greedy sequence]\label{def:modified-greedy}
+Fix a deterministic set \(D\subset\N\) with \(1\in D\), \(2\notin D\), and
+\(\abs{D\cap[1,N]}=o(N)\).  The modified greedy construction rejects every
+\(n\in D\), accepts \(2\), and for each \(n\ge3\) with \(n\notin D\), accepts
+\(n\) if and only if adjoining \(n\) to the accepted prefix creates no equality
+between two distinct finite consecutive-block products.
+\end{definition}
+
+\begin{lemma}[Greedy uniqueness]\label{lem:greedy-unique}
+Every finite accepted prefix produced by Definition~\ref{def:modified-greedy}
+has distinct consecutive-block products.
+\end{lemma}
+
+\begin{proof}
+The initial accepted prefix is \(\{2\}\).  A rejection leaves the accepted
+prefix unchanged.  An acceptance occurs only after the enlarged prefix has
+been tested to have no equality between two distinct consecutive-block
+products.  Induction over the scan proves the claim.
+\end{proof}
+
+\begin{lemma}[Old-new witness split]\label{lem:witness-split}
+Let \(n\ge3\) be rejected by the modified greedy construction and suppose
+\(n\notin D\).  If \(d_1<\cdots<d_m\) is the accepted prefix before testing
+\(n\), then there is an old consecutive accepted block product \(P\) and a
+suffix product \(S\) of the old prefix, possibly \(S=1\), such that
+\[
+  P=nS.
+\]
+\end{lemma}
+
+\begin{proof}
+The old prefix has distinct block products by Lemma~\ref{lem:greedy-unique}.
+Since \(n\notin D\), rejection means that adding \(n\) creates a collision.
+Old-old collisions are impossible.  Two new block products both contain \(n\);
+after cancelling \(n\), one obtains equality of two final suffix products of
+the old prefix.  Distinct final suffixes are strictly ordered by inclusion,
+and extending a suffix multiplies its product by an accepted integer at least
+\(2\).  Hence two new products cannot collide.  The collision is therefore
+between an old block and a new block, and every new block is \(n\) times an
+old suffix product.
+\end{proof}
+
+\begin{definition}
+A nonforced rejection \(n\notin D\) is an \emph{empty-suffix rejection} if it
+has some witness in Lemma~\ref{lem:witness-split} with \(S=1\).  Otherwise we
+choose, once and for all, the lexicographically first old-new witness in
+accepted-index coordinates, first by old-block endpoints and then by suffix
+start, and call \(n\) a \emph{nonempty rejection}.  For nonempty rejections we
+cancel the maximal common contiguous overlap between the old block and the
+final suffix.  The old block is not contained in that suffix, and if the
+cancellation exhausted the suffix then \(n\) would itself be an old block
+product.  Thus the remaining suffix is nonempty, and the old block lies
+strictly before it.
+\end{definition}
+
+\begin{lemma}[Sparse old products]\label{lem:block-products-sparse}
+For any increasing positive-integer sequence \(d_1<d_2<\cdots\) with
+\(d_1\ge2\), the number of values at most \(N\) which occur as
+\(P_d(u,v)\) with \(v-u+1\ge2\) is \(o(N)\).
+\end{lemma}
+
+\begin{proof}
+Since \(d_i\ge i+1\), a length-\(\ell\) block starting at index \(i\) has
+product at least \((i+1)^\ell\).  For fixed \(\ell\ge2\), at most
+\(N^{1/\ell}\) length-\(\ell\) block products can be \(\le N\).  No length
+\(\ell>\log_2 N\) contributes.  Thus the number of such values is at most
+\[
+  \sum_{2\le \ell\le \log_2 N} N^{1/\ell}
+  =O(N^{1/2}\log N)=o(N).
+\]
+\end{proof}
+
+\begin{corollary}\label{cor:empty-suffix}
+The empty-suffix rejections of the modified greedy construction have density
+zero.
+\end{corollary}
+
+\begin{proof}
+An empty-suffix rejection \(n\) is an old block product.  The old block has
+length at least two, since length one would make \(n\) an already accepted
+old term.  Apply Lemma~\ref{lem:block-products-sparse} to the accepted
+sequence.
+\end{proof}
+
+\begin{lemma}[Elementary smooth decay]\label{lem:smooth-decay}
+Let \(E>0\), \(\rho>1\), and \(M>0\) be fixed.  Then
+\[
+  \Psi(X,(\log X)^E)=o(X)
+\]
+and, with \(Y_X=\exp(\log X/(\log\log X)^\rho)\),
+\[
+  \Psi(2X,Y_X)=o\!\left(\frac{X}{(\log X)^M}\right).
+\]
+\end{lemma}
+
+\begin{proof}
+For \(1/2\le\sigma<1\), Rankin's trick gives
+\[
+  \Psi(X,Y)\le X^\sigma\prod_{p\le Y}(1-p^{-\sigma})^{-1}.
+\]
+Write \(\sigma=1-\eta\), \(0<\eta\le1/2\).  Chebyshev's bound and partial
+summation give
+\[
+\log\prod_{p\le Y}(1-p^{-\sigma})^{-1}
+ \ll \log\log(3Y)+\frac{Y^\eta}{\eta\log Y}.
+\]
+This rests on the estimate
+\[
+\sum_{p\le Y}p^{-1+\eta}
+\le \pi(Y)Y^{-1+\eta}
+ +(1-\eta)\int_2^Y \pi(t)t^{-2+\eta}\,dt
+\ll \frac{Y^\eta}{\log Y}
+ + \int_2^Y \frac{t^{-1+\eta}}{\log t}\,dt,
+\]
+and splitting the last integral at \(\log t=1/\eta\), which gives
+\(O(\log\log(3Y))\) below the split and \(O(Y^\eta/(\eta\log Y))\) above it.
+
+For \(Y=(\log X)^E\), choose fixed \(\sigma\in(0,1)\) with
+\(E(1-\sigma)<1\), obtaining \(X^\sigma\exp(o(\log X))=o(X)\).
+For \(Y_X=\exp(L/u)\), \(L=\log X\), \(u=(\log\log X)^\rho\), take
+\(\eta=(\log u)/(2\log Y_X)\).  Then \(Y_X^\eta=\sqrt u\) and
+\(\eta L=\tfrac12 u\log u\), while the Euler-product exponent above is
+\[
+  O(\log\log X+\sqrt u/\log u)=o(u\log u).
+\]
+Therefore
+\[
+  \Psi(2X,Y_X)\le 2X\exp(-\Omega(u\log u)),
+\]
+which beats every fixed power of \(\log X\) because \(\rho>1\).
+\end{proof}
+
+\begin{lemma}[Actual blocks and final suffixes]\label{lem:monotonicity}
+For any strictly increasing accepted set:
+\begin{enumerate}[label=(\alph*)]
+\item for fixed accepted endpoint \(x\) and fixed length \(\ell\), there is
+at most one actual consecutive accepted block of length \(\ell\) ending at
+\(x\);
+\item for fixed \(r\ge0\), the function
+\[
+  F_r(n)=n\prod_{\substack{a<n\\a\ {\rm accepted}\\a\ {\rm among\ last}\ r}}
+  a
+\]
+is strictly increasing on candidates \(n\) for which the last \(r\) accepted
+predecessors exist.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Part (a) is immediate from strict increase.  If \(n_1<n_2\), then the ordered
+\(r\)-tuple of last accepted predecessors before \(n_1\) is coordinatewise
+\(\le\) the corresponding tuple before \(n_2\).  The predecessor product is
+therefore nondecreasing, and multiplication by \(n_1<n_2\) gives
+\(F_r(n_1)<F_r(n_2)\).
+\end{proof}
+
+\section{Private Barriers}\label{sec:barriers}
+
+We turn to the construction of the deterministic set \(D\).  The barriers are
+built only here; everything afterwards rests solely on the three properties
+recorded in Proposition~\ref{prop:barriers}.  Put
+\[
+  \beta=6,\qquad L_X=\floor{(\log X)^\beta},\qquad
+  L_0(X)=(\log(3X))^{2.1}.
+\]
+For each sufficiently large dyadic shell \((X,2X]\), partition the shell into
+full consecutive intervals of length \(L_X\); boundary remainders are put in
+\(D\).  In a full block \(I=[U,U+L_X)\), an integer start \(y\) is
+\emph{admissible} if \(U\le y\) and \(y+L_0(X)<U+L_X\).
+
+\begin{proposition}[Finite-horizon private barriers]\label{prop:barriers}
+There is a deterministic set \(D\subset\N\) of density zero and a set of
+selected semiprime barriers \(b=p_1p_2\) such that:
+\begin{enumerate}[label=(\roman*)]
+\item every selected barrier has
+\[
+  (\log b)^{1.08}<p_1\le(\log b)^{1.1},
+\]
+and its large prime \(p_2\) is a globally unique private label;
+\item every selected barrier lies outside \(D\) and is accepted by the
+modified greedy construction;
+\item for every sufficiently large \(N\), put
+\[
+  F_Y=Y^{\floor{\sqrt{\log\log Y}}},
+\]
+and let \(X_0=X_0(N)\) be the dyadic scale with
+\(F_{X_0}<N\le F_{2X_0}\).  Outside \(D\), a finite initial segment, and the
+\(o(N)\) inverse-horizon smooth family whose chosen witness has old-left
+maximum \(x\le5X_0\), every nonforced nonempty rejection \(n\le N\), with its
+chosen overlap-cancelled witness, has a previous selected barrier \(q_B(n)<n\)
+such that
+\[
+  n-q_B(n)=O((\log n)^\beta),
+\]
+the final suffix of the witness starts after \(q_B(n)\), and the old-left
+block in the witness has value span \(O((\log n)^\beta)\).
+\end{enumerate}
+\end{proposition}
+
+Only the properties listed in Proposition~\ref{prop:barriers} are used in the
+later localization and counting arguments.
+
+\begin{proof}
+We start above a large fixed dyadic shell, put \(1\in D\), keep \(2\notin D\),
+and absorb all finite initial choices into \(O(1)\).
+
+\smallskip
+\noindent\emph{Good blocks and label supply.}
+Call a full \(L_X\)-block bad if fewer than half of its admissible starts are
+good in the sense of Input~\ref{inp:MT}.  Since the admissible-start sets of
+distinct full blocks are disjoint and each full block has \((1+o(1))L_X\)
+admissible starts, Input~\ref{inp:MT}, applied up to \(2X+O(L_X)\), implies
+that bad blocks in \((X,2X]\) have total length \(O(X/(\log X)^\delta)\).
+Put all bad blocks in \(D\).
+For every admissible start in the shell, \(y<3X\) for large \(X\), so
+\((\log y)^{2.1}\le L_0(X)\); hence the MT interval attached to \(y\) remains
+inside its long block.
+
+In any remaining block, the good starts contribute
+\(\gg L_X(\log X)^{1.1}\) start-semiprime incidences.  A fixed semiprime
+\(b\) can be counted only for starts \(y\) with \(b-L_0(X)<y<b\), hence for at
+most \(L_0(X)+O(1)\) starts.  Thus the block contains at least
+\[
+  \gg \frac{L_X(\log X)^{1.1}}{L_0(X)}
+  =(\log X)^{\beta-1-o(1)}
+\]
+distinct semiprimes.  A fixed large prime label \(p_2\) gives at most one such
+semiprime in one long block: two products \(p_1p_2\), \(p'_1p_2\) differ by
+at least \(p_2\), while for these semiprimes
+\(p_2=b/p_1\gg X/(\log X)^{1.1}\gg L_X\).  Hence each good block has
+\((\log X)^{\beta-1-o(1)}\) distinct candidate labels.
+For every counted \(b=p_1p_2\), since \(b\in(y,y+L_0(X)]\), we have
+\(\log b=\log y+O(L_0(X)/X)=(1+o(1))\log X\).  The upper bound below is
+immediate, and the lower bound follows from the exponent gap \(1.09>1.08\);
+after increasing the initial cutoff,
+\[
+  (\log b)^{1.08}<p_1\le(\log b)^{1.1}.
+\]
+
+\smallskip
+\noindent\emph{Greedy block-label matching.}
+Order good blocks by left endpoint and candidate labels in each block by
+increasing \(p_2\).  Scan blocks in order and match a block to the first
+candidate label which was not selected in an earlier shell and has not already
+been matched in the current shell.  If no such label exists, leave the block
+unmatched.
+
+A label selected in an earlier shell \((Y,2Y]\) can also be a candidate in
+\((X,2X]\) only for polylogarithmically comparable \(Y\).  Comparing the two
+size ranges
+\[
+  \frac{X}{(\log X)^{1.1}}\ll p_2\ll \frac{X}{(\log X)^{1.08}},
+  \qquad
+  \frac{Y}{(\log Y)^{1.1}}\ll p_2\ll \frac{Y}{(\log Y)^{1.08}},
+\]
+first gives \(Y=X^{1+o(1)}\), and then the safer window
+\[
+  cX(\log X)^{-0.05}\le Y\le C X(\log X)^{0.05}.
+\]
+Thus the number of earlier selected labels relevant to the current shell is
+\[
+  O\!\left(\frac{X}{L_X}(\log X)^{0.06}\right),
+\]
+where the factor \((\log X)^{0.01}\) absorbs the \(O(\log\log X)\) dyadic
+shells in the comparable range.  Current-shell matched labels are absorbed in
+the same bound.  Also a fixed label is adjacent to at most
+\((\log X)^{1.1+o(1)}\) current blocks: \(p_1\) has only that many possible
+prime values, and each product \(p_1p_2\) lies in \(O(1)\) long blocks.  If
+\(U\) good blocks remain unmatched, then every candidate label of each
+unmatched block is either an earlier selected label or a label already matched
+in the current shell.  Counting these incidences gives
+\[
+  U(\log X)^{\beta-1-o(1)}
+  \ll \frac{X}{L_X}(\log X)^{0.06}(\log X)^{1.1+o(1)}.
+\]
+Hence
+\[
+  U=O\!\left(\frac{X}{L_X}
+  (\log X)^{-(\beta-2.16)+o(1)}\right)=o(X/L_X).
+\]
+Put all unmatched good blocks in \(D\).  In each matched block select the
+matched semiprime as its barrier.
+
+\smallskip
+\noindent\emph{Prefix deletions.}
+After every maximal deleted run of long blocks, and after each shell boundary,
+look at the first subsequent matched block and delete its nonbarrier prefix
+before the selected barrier.  The number of bad blocks is
+\(O(X/(L_X(\log X)^\delta))\), and the number of unmatched blocks is
+\[
+  O\!\left(\frac{X}{L_X}
+  (\log X)^{-(\beta-2.16)+o(1)}\right).
+\]
+Multiplying by the prefix length \(L_X\), the block and prefix deletions in
+\((X,2X]\) have size
+\[
+  O(X/(\log X)^\delta)
+  +O\!\left(X(\log X)^{-(\beta-2.16)+o(1)}\right)
+  +O(L_X)=o(X).
+\]
+
+\smallskip
+\noindent\emph{Finite-horizon multiples.}
+For a selected barrier in shell \(X\), let
+\[
+  C_X=\floor{\sqrt{\log\log X}},\qquad F_X=X^{C_X}.
+\]
+For its private label \(p_2\), put into \(D\) every multiple
+\(m\ne b\) of \(p_2\) with \(m\le F_X\).  These horizon deletions have density
+zero.  A shell \((X,2X]\) contributes at most
+\[
+  O\!\left(\frac{\min(N,F_X)}{(\log X)^{\beta-1.1}}\right)
+\]
+to \(D\cap[1,N]\), since there are \(O(X/L_X)\) selected labels and each
+label is \(\gg X/(\log X)^{1.1}\).  Put \(s=\beta-1.1>1\).
+
+For old shells with \(F_X<N\), the dyadic sum is dominated by the last such
+shell because \(C_X\) is nondecreasing and
+\[
+  F_{2X}/F_X\ge 2^{\frac12\sqrt{\log\log X}}
+\]
+eventually.  This gives \(O(N/(\log X_0)^s)\), where \(X_0\) is the largest
+dyadic shell with \(F_{X_0}<N\).  Recent shells \(X_0<X\le N\) contribute
+\[
+  N\sum_{X_0<X\le N}\frac1{(\log X)^s}
+  =O\!\left(\frac{N}{(\log X_0)^{s-1}}\right)=o(N),
+\]
+because \(F_{X_0}<N\le F_{2X_0}\) implies
+\(\log X_0\ge(1+o(1))\log N/\sqrt{\log\log N}\).  Future shells \(X>N\) can
+affect \([1,N]\) only if \(X/(\log X)^{1.1}\le N\), hence
+\(X\le N(\log N)^2\) for large \(N\); their total contribution is
+\[
+  O\!\left(\frac{N\log\log N}{(\log N)^s}\right)=o(N).
+\]
+Finally, the other deterministic deletions have dyadic total \(o(N)\).  The
+boundary remainders contribute \(O((\log N)^{\beta+1})\), and the MT-bad blocks
+contribute \(O(N/(\log N)^\delta)\).  The unmatched-block and prefix
+contribution is \(O(X(\log X)^{-(\beta-2.16)+o(1)})\) in a shell; since
+\(\beta=6\), its dyadic total is also \(o(N)\).  This proves
+\(\abs{D\cap[1,N]}=o(N)\).
+
+\smallskip
+\noindent\emph{Barrier survival and acceptance.}
+A selected barrier is in a matched block, is not in a deleted prefix, and is
+protected from its own label deletion.  Nor can any other selected label
+delete it: if a selected label \(p\) from shell \(Y\) divides \(b=p_1p_2\) and
+\(b\le F_Y\), then \(p=p_1\) or \(p=p_2\).  The case \(p=p_2\) contradicts
+global label uniqueness.  The case \(p=p_1\) is impossible for large \(Y\),
+because
+\[
+  p\ge \frac{Y}{(\log Y)^{1.1}},
+  \qquad
+  p_1\le(\log b)^{1.1}\le(\log F_Y)^{1.1}
+  =(C_Y\log Y)^{1.1}
+\]
+and the last quantity is
+\[
+  o\!\left(\frac{Y}{(\log Y)^{1.1}}\right).
+\]
+
+When \(b\) is scanned, every earlier multiple of \(p_2\) has been deleted,
+since \(b\le2X<F_X\).  Thus no old accepted product is divisible by \(p_2\):
+if \(p_2\) divided such a product, it would divide one old accepted factor,
+which would be an earlier deleted multiple of \(p_2\).  Every new product
+containing \(b\), on the other hand, is divisible by \(p_2\).  Hence no
+old-new collision can reject \(b\).  Old-old collisions are excluded by
+Lemma~\ref{lem:greedy-unique}.  Finally, two new products containing \(b\)
+would, after cancelling \(b\), give equality between two final suffix products
+of the old accepted prefix; distinct final suffixes are strictly ordered by
+inclusion and each proper extension multiplies by an accepted term at least
+\(2\).  Hence no new-new collision can reject \(b\).
+Therefore each selected barrier is accepted.
+
+\smallskip
+\noindent\emph{Blocking.}
+Consider a surviving overlap-cancelled witness
+\[
+  \prod_{\text{old left}} d_i
+  =n\prod_{\text{final suffix}} d_i
+\]
+with the old-left block strictly before the final suffix.  Suppose the old
+left block contains a selected barrier \(b=p_1p_2\) from shell \(X\), and
+\(n\le N\le F_X\).  Then \(p_2\) divides the left product, hence divides the
+right product.  The corresponding terminal factor is either \(n\) or a suffix
+factor.  It is not \(b\), because the right side lies strictly to the right of
+the old block.  It is not any selected barrier \(c=r_1r_2\le F_X\): if
+\(p_2=r_2\), global label uniqueness is violated; if \(p_2=r_1\), then
+\[
+  p_2\le(\log c)^{1.1}\le(\log F_X)^{1.1}
+  =o(X/(\log X)^{1.1}),
+\]
+contradicting \(p_2\gg X/(\log X)^{1.1}\).  Thus the terminal factor is a
+nonbarrier multiple of \(p_2\) below \(F_X\), hence belongs to \(D\), which is
+impossible for either \(n\) or an accepted suffix factor.
+
+\smallskip
+\noindent\emph{Previous barriers and localization.}
+Every sufficiently large nondeleted integer \(y\) which is not itself a
+selected barrier has a previous selected barrier \(q_B(y)<y\) with
+\[
+  y-q_B(y)=O((\log y)^\beta).
+\]
+If \(y\) lies after the selected barrier in its matched block, use that
+barrier.  If \(y\) lies before it, then \(y\) is in the nonbarrier prefix of
+that matched block.  Since \(y\notin D\), this block cannot be the first
+matched block after a deleted run or after the shell boundary, because those
+prefixes were deleted.  The preceding full block is therefore undeleted and
+matched, and its barrier is below \(y\) within two \(L_X\)-blocks.
+
+Let \(n\) be a surviving nonempty rejection.  It is not itself a selected
+barrier, since selected barriers are accepted.  The final suffix in its
+chosen witness contains no selected barrier: if it contained \(b=p_1p_2\),
+then every old-left factor would be \(<b\le2X_b<F_{X_b}\), where \(X_b\) is
+the shell of \(b\).  An old-left factor divisible by \(p_2\) could not be a
+selected barrier, by global label uniqueness and the small-factor bound
+already used above; it would therefore be a deleted nonbarrier multiple of
+\(p_2\).  Thus the left product would not be divisible by \(p_2\), while the
+right product would be, a contradiction.  If the final suffix began at or
+before \(q_B(n)\), it would contain the accepted selected barrier \(q_B(n)\).
+Consequently the suffix starts after \(q_B(n)\), and its length is
+\(O((\log n)^\beta)\).
+
+Finally choose, for large \(N\), the dyadic \(X_0=X_0(N)\) with
+\[
+  F_{X_0}<N\le F_{2X_0}.
+\]
+If the old-left maximum \(x\) in the chosen witness satisfies \(x\le5X_0\),
+then \(n\) is \(5X_0\)-smooth, because \(n\) divides the old-left product.
+Moreover
+\[
+  \frac{\log N}{\log(5X_0)}
+  =(1+o(1))\sqrt{\log\log N}.
+\]
+Input~\ref{inp:dickman} shows that these endpoints are \(o(N)\).  For all
+remaining endpoints, \(x>5X_0\).  If \(x\) is a selected barrier, its horizon
+is at least \(N\): the dyadic scale of \(x\) is above \(2X_0\), and
+\(X\mapsto F_X=X^{\floor{\sqrt{\log\log X}}}\) is eventually increasing on
+dyadic scales, so this horizon is at least \(F_{2X_0}\ge N\).  The blocking
+argument forbids survival.  If \(x\) is not a selected barrier, the previous
+barrier below \(x\) lies within \(O((\log x)^\beta)\) and, for large \(N\),
+above \(2X_0\), since \(x\le N\le F_{2X_0}\) makes every fixed power of
+\(\log x\) equal to \(o(X_0)\).  The same monotonicity gives horizon at least
+\(N\).  The old-left block cannot contain that previous barrier, so it must
+start after it.  Thus the old-left span is \(O((\log n)^\beta)\).
+\end{proof}
+
+\section{Localized Nonempty Witnesses}\label{sec:localization}
+
+Fix the deletion set and selected barriers from Proposition~\ref{prop:barriers},
+and for a nonempty rejection \(n\) use the deterministic overlap-cancelled
+witness of Section~\ref{sec:greedy}.  What remains is to turn the qualitative
+barrier information into a concrete numerical product identity, one in which
+every local shift is bounded by a fixed power of \(\log X\).
+
+\begin{proposition}[Localized witness]\label{prop:localized}
+There is a fixed exponent \(B>20\) such that, in every sufficiently large
+dyadic shell \(X<n\le2X\), all but \(o(X)\) nonempty rejection endpoints have
+a chosen witness
+\[
+  \prod_{i=1}^{\ell}(x-a_i)=\prod_{j=1}^{b}(q+c_j),
+  \qquad q=q_B(n),\quad n=q+h,
+\]
+with the following properties:
+\begin{align*}
+&2\le h\le(\log X)^7,\qquad
+0\le a_i<T_X,\qquad 1\le c_j\le h,\qquad T_X=(\log X)^B,\\
+&b=r+1,\qquad \ell=b+s,\qquad s\ge1,\qquad r\le(\log X)^7,\\
+&\ell\le \ceil{((\log X)^7+1)\log_2(2X)}+2,\\
+&b\ge c\,\frac{\log X}{\log\log X}\quad\text{for a fixed }c>0,\\
+&x=q^{b/\ell}+O(T_X)\quad\text{with an absolute implicit constant},\\
+&(\log X)^{-B}\le 1-\frac b\ell\le B\frac{\log\log X}{\log X},\\
+&x<q<2X.
+\end{align*}
+The left factors \(x-a_i\) are distinct accepted terms, the terminal values
+\(q+c_j\) are distinct, and they are exactly \(n=q+h\) together with the
+actual final length-\(r\) suffix before \(n\).
+\end{proposition}
+
+\begin{proof}
+The witness split gives an equality between an old block and \(n\) times a
+final suffix.  The old block cannot be wholly contained in that suffix, since
+then its product would be at most the suffix product, whereas the right side is
+\(n\) times the suffix product with \(n>1\).  If it overlaps the suffix,
+cancel the common contiguous overlap.  Since the suffix is final, these are
+the only possibilities besides the old block already lying strictly before
+the suffix.  If cancellation exhausted the suffix, then \(n\) would be an old
+block product and hence an empty-suffix rejection.  Thus the chosen witness has
+the form
+\[
+  \prod_{t=u}^{v} d_t
+  = n\prod_{t=c}^{m} d_t,\qquad v<c\le m.
+\]
+Let \(x=d_v\), let \(w=d_u\), and let \(r=m-c+1\).  Proposition~\ref{prop:barriers},
+applied with ambient bound \(2X\), removes \(o(X)\) deterministic,
+inverse-horizon smooth, and finite-initial endpoints and gives
+\begin{align*}
+  2\le h=n-q_B(n)&\le(\log X)^7,\\
+  r&\le(\log X)^7,\\
+  x-w&\le(\log X)^7,\\
+  x&>(\log X)^7.
+\end{align*}
+After this removal, the remaining endpoints have \(x>5X_0(2X)\).  This
+inverse-horizon scale satisfies
+\(\log X_0(2X)=(1+o(1))\log X/\sqrt{\log\log X}\), so
+\(X_0(2X)>(\log X)^C\) for every fixed \(C\), once \(X\) is large; in
+particular \(x>(\log X)^7\).
+The lower bound \(h\ge2\) follows because the nonempty suffix starts after
+\(q_B(n)\) and contains an accepted term \(<n\).
+
+The terminal side has \(r+1\) factors, each at most \(2X\), while every
+old-left factor is an accepted integer at least \(2\).  Hence
+\[
+  2^\ell\le (2X)^{r+1},
+\]
+which gives the stated upper bound for \(\ell\).  Also \(\ell\ge r+2\):
+all terminal factors are larger than all old-left factors, so if
+\(\ell\le r+1\), the terminal product would strictly exceed the old product.
+
+Two elementary tails are negligible.  First suppose
+\[
+  \frac{\ell}{r+1}\ge 1+60\frac{\log\log X}{\log X}.
+\]
+Since the old-left span is at most \((\log X)^7\),
+\[
+  (x-(\log X)^7)^\ell\le(2X)^{r+1},
+\]
+so \(x\le(\log X)^7+X/(\log X)^{40}\le X/(\log X)^{39}\) for large \(X\).
+For fixed \(x,\ell,r\), the
+old-left block and its product are fixed, and the right side
+\[
+  n\cdot\text{(last \(r\) accepted predecessors before \(n\))}
+\]
+is strictly increasing by Lemma~\ref{lem:monotonicity}.  Thus there is at
+most one endpoint for each fixed \(x,\ell,r\).  Here \(x\) has
+\(O(X/(\log X)^{39})\) possible values, while \(\ell\) and \(r\) have only
+fixed-polylogarithmically many possible values; the total is therefore
+\(O(X/(\log X)^{20})=o(X)\).  Second, if
+\[
+  r\le \floor{\frac{\log X}{60\log\log X}},
+\]
+then the same argument gives
+\[
+  x\le(\log X)^7+(2X)^{(r+1)/(r+2)}\le \frac{3X}{(\log X)^{50}},
+\]
+and the same fixed-product and monotonicity argument, now with only
+polylogarithmically many \((\ell,r)\) and \(O(X/(\log X)^{50})\) possible
+values of \(x\), gives \(o(X)\) endpoints.
+
+For the remaining endpoints, with \(b=r+1\),
+\[
+  b\ge c\frac{\log X}{\log\log X},\qquad
+  \ell=b+s,\qquad
+  1\le s<60b\frac{\log\log X}{\log X}.
+\]
+Choose fixed \(B>20\) so large that \(T_X=(\log X)^B\) dominates all fixed
+polylogarithmic constants in the preceding estimates.  The witness becomes
+\[
+  \prod_{i=1}^{\ell}(x-a_i)=\prod_{j=1}^{b}(q+c_j),
+\]
+where \(0\le a_i<T_X\), \(1\le c_j\le h\), and \(n=q+h\) is included among
+the terminal values.
+
+The terminal product lies between \(q^b\) and \((q+h)^b\), and the old product
+lies between \((x-(\log X)^7)^\ell\) and \(x^\ell\).  Thus
+\[
+  q^{b/\ell}\le x\le(\log X)^7+(q+h)^{b/\ell}.
+\]
+Since \(0<b/\ell<1\), the function \(t^{b/\ell}\) is increasing and concave on
+\([q,q+h]\), with derivative at most \(1\).  Hence
+\((q+h)^{b/\ell}-q^{b/\ell}\le h\), and therefore
+\[
+  0\le x-q^{b/\ell}\le(\log X)^7+h\le T_X
+\]
+for large \(X\), after enlarging \(B\) if necessary.
+The lower bound
+\[
+  1-\frac b\ell\ge(\log X)^{-B}
+\]
+follows from \(s\ge1\) and \(\ell\le(\log X)^B\); the upper bound follows
+from \(s<60b\log\log X/\log X\), after enlarging \(B\).
+
+Finally let \(\theta=b/\ell\) and \(\Delta=1-\theta\ge(\log X)^{-B}\).
+Since \(q\ge X-(\log X)^7\), the function
+\(\Delta\mapsto 1-e^{-\Delta\log q}\) is increasing, and
+\((\log X)^{-B}\log q=o(1)\), we have
+\[
+  q-q^\theta=q(1-e^{-\Delta\log q})
+  \gg \frac{X\log X}{(\log X)^B}\gg T_X.
+\]
+Together with \(0\le x-q^\theta\le T_X\), this gives \(x<q\).  The inequality
+\(q<2X\) is immediate from \(q<n\le2X\).
+\end{proof}
+
+\section{Terminal Support}\label{sec:terminal}
+
+A single product identity does not by itself bound the number of endpoints;
+what it yields is arithmetic information.  Any large prime dividing the
+left-hand side of the localized identity must also divide one of the terminal
+factors on the right.  The two lemmas of this section render this observation
+quantitative, extracting from each identity a family of independent
+large-prime congruences, which serve as the input to the counting argument of
+Section~\ref{sec:slab}.
+
+\begin{lemma}[Smooth accepted left factors]\label{lem:smooth-left}
+Let
+\[
+  Y_X=\exp\!\left(\frac{\log X}{(\log\log X)^2}\right).
+\]
+Among the localized endpoints of
+Proposition~\ref{prop:localized}, those for which some accepted left factor
+\(x-a_i\) has \(\pplus(x-a_i)\le Y_X\) form an \(o(X)\) family in the shell
+\((X,2X]\).
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:smooth-decay}, the number of \(Y_X\)-smooth integers
+\(\le2X\) is
+\[
+  o\!\left(\frac{X}{(\log X)^M}\right)
+\]
+for every fixed \(M\).  Given such an
+integer \(m=x-a_i\), there are at most \(T_X\) choices for \(x\).  For fixed
+\(x\) and \(\ell\) there is at most one actual left block, and for each
+fixed suffix length \(r\) at most one endpoint.  For the fixed left block has a
+fixed product \(P\), while any endpoint counted with that block and this \(r\)
+must satisfy
+\[
+  P=n\prod_{\substack{a<n\\a\ {\rm accepted}\\a\ {\rm among\ last}\ r}}a,
+\]
+and the right side is strictly increasing in \(n\) by
+Lemma~\ref{lem:monotonicity}.
+These at most \(T_X\) choices of \(x\) already account for the possible position of
+the smooth factor inside the left block.  The remaining choices of \(\ell\)
+and \(r\) are at most \(O((\log X)^8)\) and \(O((\log X)^7)\), respectively.
+Thus the endpoint count is
+\[
+  o\!\left(\frac{X}{(\log X)^M}\right)O((\log X)^{B+15}),
+\]
+and taking \(M\) larger than this fixed loss gives \(o(X)\).
+\end{proof}
+
+\begin{lemma}[Terminal-support extraction]\label{lem:terminal-support}
+Consider a localized endpoint from Proposition~\ref{prop:localized}, not
+counted in Lemma~\ref{lem:smooth-left}, and take \(X\) large enough that
+\((\log X)^7<T_X\) and \(T_X+(\log X)^7<Y_X\).
+For every left factor choose
+\[
+  p_i=\pplus(x-a_i)>Y_X.
+\]
+Put
+\[
+  \Lambda_X=\ceil{\frac{\log(3X)}{\log Y_X}}+2.
+\]
+Then the endpoint supplies at least \(\floor{\ell/\Lambda_X^2}\) distinct
+local slab points \((a_i,r_i)\), \(r_i=a_i+c_i\), with distinct \(r_i\)'s and
+carrying distinct prime labels \(p_i>Y_X\) such that
+\[
+  p_i\mid x-a_i,\qquad p_i\mid D_0+r_i,\qquad D_0=q-x>0.
+\]
+\end{lemma}
+
+\begin{proof}
+Since \(p_i\) divides the left product, it divides one terminal value
+\(q+c_i\), \(1\le c_i\le h\).  This terminal value is unique, because two
+terminal values differ by less than \(h<Y_X<p_i\).  A label \(p_i\) appears
+on at most one left factor and at most one terminal value, since left factors
+differ by less than \(T_X<Y_X\) and terminal values differ by at most \(h<Y_X\).
+
+A fixed terminal value \(\le n\le2X<3X\) is incident to at most
+\(\Lambda_X\) chosen labels, since these labels are distinct primes and the
+value cannot have more than
+\(\log(3X)/\log Y_X+1\) distinct prime factors exceeding \(Y_X\).  Therefore
+the incidence graph from \(\ell\) left vertices to terminal vertices contains
+a matching of size at least \(\floor{\ell/\Lambda_X}\): the \(\ell\) left
+edges occupy at least \(\ceil{\ell/\Lambda_X}\) terminal vertices, and choosing
+one incident edge over each occupied terminal gives a matching, since each
+left vertex has degree one.  The matched labels are distinct.
+
+For a matched edge, \(p_i\mid x-a_i\) and \(p_i\mid q+c_i\), so
+\[
+  p_i\mid(q+c_i)-(x-a_i)=D_0+a_i+c_i.
+\]
+Set \(r_i=a_i+c_i\).  For a fixed value \(\rho\), all matched labels with
+\(r_i=\rho\) divide the positive integer \(D_0+\rho\), where positivity follows
+from \(D_0>0\) and \(\rho=a_i+c_i\ge1\).  Since
+\(D_0+\rho\le q-x+T_X+h<3X\) for large \(X\), there
+are at most \(\Lambda_X\) of them.  Selecting one representative for each
+distinct \(r_i\) leaves at least \(\floor{\ell/\Lambda_X^2}\) slab points:
+if \(M\ge\floor{\ell/\Lambda_X}\) matched edges remain and at most
+\(\Lambda_X\) have the same \(r_i\), then
+\(\ceil{M/\Lambda_X}\ge\floor{\ell/\Lambda_X^2}\): writing
+\(\ell=a\Lambda_X^2+r\) with \(0\le r<\Lambda_X^2\), one has
+\(\floor{\ell/\Lambda_X}\ge a\Lambda_X\), and hence
+\(\ceil{\floor{\ell/\Lambda_X}/\Lambda_X}\ge a=\floor{\ell/\Lambda_X^2}\).
+The retained points have distinct labels and the stated divisibilities.
+\end{proof}
+
+\section{The Shifted-CRT Slab Count}\label{sec:slab}
+
+Once the terminal support is available, the remaining count is carried out by
+a single proposition, whose proof rests on the determinant method.  One
+interpolates a polynomial of low degree through the local points; the
+congruences accumulated above then force it to vanish at the global point;
+and a bound for the number of global points lying on a fixed curve of low
+degree completes the count.  The argument divides into three parts: the
+interpolation step, an estimate for the nonlinear components of the auxiliary
+polynomial by means of Input~\ref{inp:CCDN}, and a separate treatment of its
+line components, for which the determinant method is unavailable and the
+curvature of \(q^\theta\) is used in its place.
+
+\begin{lemma}[Auxiliary interpolation]\label{lem:interpolation}
+Let \(Z\) be a set of \(K\ge1\) distinct integer points in a fixed
+polylogarithmic box
+\[
+  \abs{A},\abs{R}\le(\log X)^{B_0},
+\]
+and assume \(K\log\log X=o(\log X)\).  With
+\[
+  m=\ceil{4\sqrt K},
+\]
+there is a nonzero nonconstant polynomial \(G(A,R)\in\Z[A,R]\), of total
+degree at most \(m\) and height \(\exp(O(m\log\log X))\), vanishing on \(Z\).
+It may be chosen primitive, with a fixed sign convention for its first
+nonzero coefficient.
+\end{lemma}
+
+\begin{proof}
+The number \(N_m\) of monomials \(A^uR^v\), \(u+v\le m\), is
+\((m+1)(m+2)/2>2K\).  The \(K\times N_m\) evaluation matrix on \(Z\) has all
+entries bounded by \(\exp(O(m\log\log X))\).  Compare coefficient vectors in
+\([0,Q)^{N_m}\) under the \(K\) evaluation forms.  For
+\[
+  Q\ge (3N_mH_0)^{K/(N_m-K)}+1,\qquad H_0=\exp(O(m\log\log X)),
+\]
+two vectors have the same image; their nonzero difference gives an integer
+kernel vector of height \(\exp(O(m\log\log X))\).  The corresponding
+polynomial vanishes on \(Z\), and is not a nonzero constant because \(K\ge1\).
+Dividing its coefficient vector by the gcd of the coefficients and fixing the
+sign of the first nonzero coefficient preserves all these bounds and gives the
+primitive normalized choice.
+\end{proof}
+
+\begin{lemma}[Line-factor height]\label{lem:line-height}
+Let \(G(A,R)\in\Z[A,R]\) be primitive, nonzero, of total degree at most \(m\),
+with
+\[
+  m^2=o(\log X),\qquad H(G)=\exp(o(\log X)).
+\]
+If
+\[
+  L(A,R)=\alpha A+\beta R+\gamma
+\]
+is a primitive integer line factor of \(G\) over \(\Q\), then
+\[
+  \max(\abs{\alpha},\abs{\beta},\abs{\gamma})=X^{o(1)}.
+\]
+\end{lemma}
+
+\begin{proof}
+Homogenize \(G\) as a degree-\(m\) form; the line becomes the
+primitive homogeneous factor
+\[
+  L^h=\alpha A+\beta R+\gamma W.
+\]
+Permute variables so the largest coefficient is the coefficient \(c\) of the
+homogenizing variable, and write the line as \(aU+bV+cW\).  Dehomogenizing at
+\(W=1\) gives a polynomial \(P(U,V)\) of degree at most \(m\), height
+\(\le H(G)\), divisible by \(aU+bV+c\).
+
+If \(\max(|a|,|b|,|c|)=1\) there is nothing to prove.  Otherwise choose an
+integer slope \(0\le t\le m+1\) such that \(a+bt\ne0\) and the cofactor in
+\[
+  P=(aU+bV+c)Q
+\]
+does not vanish identically on \((U,V)=(Z,tZ)\).  In this case
+\((a,b)\ne(0,0)\).  Such a slope exists because at most \(m-1\) slopes kill
+the nonzero cofactor and at most one slope makes \(a+bt=0\): writing
+\(Q=\sum_j Q_j\) into homogeneous parts, if \(Q(Z,tZ)\) is identically zero,
+then \(Q_j(1,t)=0\) for every \(j\), and one fixed nonzero \(Q_j\) has degree
+at most \(m-1\).  Then
+\[
+  P_t(Z)=P(Z,tZ)
+\]
+is a nonzero one-variable integer polynomial of degree at most \(m\), divisible
+by \((a+bt)Z+c\), and
+\[
+  \norm{P_t}_2\le \exp(O(m\log m))H(G).
+\]
+Mignotte's inequality, Input~\ref{inp:mignotte}, gives
+\[
+  \max(|a+bt|,|c|)\le 2^m\norm{P_t}_2
+  \le\exp(O(m\log m))H(G).
+\]
+Since \(|c|\) was the largest line coefficient and
+\(m\log m=O(m^2)=o(\log X)\), the result follows.
+\end{proof}
+
+\begin{lemma}[Nonabsolute factors]\label{lem:nonabsolute}
+Let \(H(A,R)\in\Z[A,R]\) be primitive, squarefree, \(\Q\)-irreducible, not
+absolutely irreducible, and of total degree \(d\ge2\).  Then
+\[
+  \#\{P\in\Q^2:H(P)=0\}\le d^2.
+\]
+\end{lemma}
+
+\begin{proof}
+Over \(\overline{\Q}\), the polynomial \(H\) is a product of at least two
+distinct Galois-conjugate absolute factors.  A rational zero of \(H\) lies on
+one absolute factor, hence by Galois conjugacy lies on every conjugate factor.
+Choose two distinct factors.  They have no common component, so Bezout bounds
+their common affine zero set by the product of their degrees, at most \(d^2\).
+\end{proof}
+
+\begin{proposition}[Shifted-CRT slab count]\label{prop:slab}
+Fix constants \(A,B,B_1,\kappa>0\).  In a dyadic shell \(X<n\le2X\), suppose the
+endpoints under consideration have integral localized data
+\[
+  n=q+h,\quad 1\le h\le(\log X)^A,\quad T_X=(\log X)^B,
+\]
+\[
+  x=q^\theta+O(T_X),\quad D_0=q-x>0,\quad 0<\theta<1,
+\]
+where the implicit constant in \(O(T_X)\) is uniform over all endpoints with
+the fixed parameter tuple.
+\[
+  (\log X)^{-B}\le 1-\theta\le B\frac{\log\log X}{\log X}.
+\]
+Assume that, for every fixed \(\eps>0\), the number of parameter tuples,
+including \(h,\theta\), and \(K\), is \(O_\eps(X^\eps)\).  Let
+\[
+  Y_X=\exp(\log X/(\log\log X)^{\kappa}).
+\]
+Suppose each endpoint carries \(K\) distinct local slab points
+\[
+  z_i=(a_i,r_i),\qquad
+  0\le a_i<T_X,\qquad |r_i|\le(\log X)^{B_1},
+\]
+with distinct prime labels \(p_i>Y_X\) satisfying
+\[
+  p_i\mid x-a_i,\qquad p_i\mid D_0+r_i.
+\]
+If
+\[
+  K\log\log X=o(\log X),\qquad
+  \frac{K\log Y_X}{\sqrt K\,\log X}\to\infty,
+\]
+then the number of such endpoints in \((X,2X]\) is \(o(X)\).
+\end{proposition}
+
+\begin{proof}
+The proof proceeds in the three parts outlined above.
+
+\smallskip
+\noindent\emph{Auxiliary curves.}
+Fix one localized parameter tuple and one retained \(K\)-set \(Z\) of local
+points.  The number of possible \(Z\)'s is \(X^{o(1)}\), since the local box is
+polylogarithmic and
+\[
+  \binom{(\log X)^{O(1)}}{K}\le\exp(O(K\log\log X))=X^{o(1)}.
+\]
+Fix a constant \(C_G\), depending only on the local box exponents \(B\) and
+\(B_1\), for
+which Lemma~\ref{lem:interpolation} supplies a primitive nonzero polynomial
+\(G(A,R)\) of degree at most \(m=\ceil{4\sqrt K}\), height at most
+\(\exp(C_Gm\log\log X)\), and vanishing on \(Z\).  Among all such polynomials
+with first nonzero coefficient positive, choose the lexicographically first
+coefficient vector.  Thus \(G\) depends only on the fixed parameters and the
+coordinate set \(Z\), not on the endpoint-specific prime labels.
+
+For every endpoint and every retained point,
+\[
+  (x,-D_0)\equiv (a_i,r_i)\pmod {p_i}.
+\]
+Therefore each \(p_i\) divides \(G(x,-D_0)\), and the distinctness of the labels
+gives
+\[
+  \prod_i p_i\mid G(x,-D_0).
+\]
+If \(G(x,-D_0)\ne0\), then, since \(G\) has \(O(m^2)=O(K)\) monomials and
+\(|x|,|D_0|=O(X)\),
+\[
+  \log |G(x,-D_0)|=O(m\log X)=O(\sqrt K\,\log X).
+\]
+But
+\[
+  \log\prod_i p_i\ge K\log Y_X,
+\]
+and the ratio \(K\log Y_X/(\sqrt K\log X)\) tends to infinity.  This is
+incompatible with the preceding bound for large \(X\).  Hence
+\(G(x,-D_0)=0\).
+
+\smallskip
+\noindent\emph{Nonlinear components.}
+Thus all endpoints lie on \(X^{o(1)}\) auxiliary curves \(G(A,R)=0\), each of
+degree \(m=X^{o(1)}\).  Remove content and repeated factors, and then consider
+the primitive squarefree factorization over \(\Q\).  This does not change the
+zero set relevant to us: every point with \(G(x,-D_0)=0\) lies on at least one
+primitive squarefree \(\Q\)-irreducible factor.  Primitive line factors are
+deferred to the next paragraph.  Nonlinear absolutely irreducible factors of
+degree \(d\ge2\) are integral affine curves.  For one such factor,
+Input~\ref{inp:CCDN}, in the box of height \(O(X)\), gives
+\[
+  O(d^3X^{1/d}(\log X+d))\le X^{1/2+o(1)}
+\]
+points.  The constant in Input~\ref{inp:CCDN} depends only on the fixed ambient
+dimension, and the squarefree factors of one auxiliary curve have total degree
+at most \(m=X^{o(1)}\); summing this bound over the absolutely irreducible
+nonlinear factors still gives \(X^{1/2+o(1)}\) points for that auxiliary curve.
+If a \(\Q\)-irreducible nonlinear factor is not absolutely irreducible,
+Lemma~\ref{lem:nonabsolute} gives \(O(d^2)\) rational points, so all
+nonabsolute factors of one auxiliary curve contribute only \(X^{o(1)}\) points.
+Multiplication by the \(X^{o(1)}\) curves still gives \(o(X)\) endpoints, since
+the fixed parameter tuple includes \(h\), and \((x,-D_0)\) determines
+\(q=x+D_0\) and \(n=q+h\).
+
+\smallskip
+\noindent\emph{Line components.}
+It remains to count primitive line factors
+\[
+  \alpha A+\beta R+\gamma=0.
+\]
+Every such factor divides the original primitive auxiliary polynomial \(G\)
+over \(\Q\), even after passing to the squarefree radical, so
+Lemma~\ref{lem:line-height} applies to the same \(G\).
+By Lemma~\ref{lem:line-height},
+\[
+  M_X:=\max(|\alpha|,|\beta|,|\gamma|)=X^{o(1)}
+\]
+uniformly for all such factors.  At the global point \(R=-D_0=x-q\),
+\[
+  (\alpha+\beta)x-\beta q+\gamma=0.              \tag{1}\label{eq:line-global}
+\]
+Also \(q\ge X/2\).  Since \(x=q^\theta+O(T_X)\) and
+\[
+  q^\theta\ge q/(\log X)^{O(B)}\gg T_X,
+\]
+we have
+\[
+  x\gg q/(\log X)^{O(B)}.
+\]
+For large \(X\), neither \(\beta\) nor \(\alpha+\beta\) can be zero in
+\eqref{eq:line-global}, otherwise \(x\) or \(q\) would be \(X^{o(1)}\).
+
+Define
+\[
+  F(q)=(\alpha+\beta)q^\theta-\beta q+\gamma.
+\]
+Since \(x=q^\theta+O(T_X)\), equation \eqref{eq:line-global} gives, for a
+fixed constant \(C_1\),
+\[
+  |F(q)|\le C_1M_XT_X.                           \tag{2}\label{eq:line-sublevel}
+\]
+On the sublevel set \eqref{eq:line-sublevel}, we have
+\[
+  |F'(q)|\ge c|\beta|(1-\theta).                 \tag{3}\label{eq:line-derivative}
+\]
+To verify this, suppose \(F'(q)=\delta\) with
+\(|\delta|<|\beta|(1-\theta)/4\); then
+\[
+  (\alpha+\beta)q^\theta=\frac{(\beta+\delta)q}{\theta}
+\]
+and hence
+\[
+  F(q)=\frac{\beta q(1-\theta)}{\theta}
+       +\frac{\delta q}{\theta}+\gamma.
+\]
+Using \(|\beta|\ge1\), \(q\gg X\),
+\((1-\theta)\ge(\log X)^{-B}\), and \(\theta\ge1/2\), the first term in this
+last display has magnitude \(\gg X/(\log X)^B\).  The \(\delta\)-term has at
+most one quarter of that magnitude, and \(|\gamma|\le M_X=X^{o(1)}\) is
+negligible in comparison.  Hence \(|F(q)|\gg X/(\log X)^B\), which is much
+larger than \(C_1M_XT_X\).
+This contradicts \eqref{eq:line-sublevel}, proving
+\eqref{eq:line-derivative}.
+
+The derivative \(F'\) is monotone on \(q>0\), since \(0<\theta<1\) and
+\(\alpha+\beta\ne0\), so \(F'\) has at most one zero.  Thus \(F\) is monotone
+on at most two intervals, and the sublevel set
+\(|F(q)|\le C_1M_XT_X\) has at most two interval components.  Each component
+has length
+\[
+  O\!\left(\frac{C_1M_XT_X}{|\beta|(1-\theta)}\right)=X^{o(1)}
+\]
+by the mean-value theorem and \eqref{eq:line-derivative}.  Hence each line
+factor contributes \(X^{o(1)}\) integer values of \(q\), and, since \(h\) is
+fixed by the parameter tuple, \(X^{o(1)}\) endpoints \(n=q+h\).  There are only
+\(X^{o(1)}\) curves and line factors.  Thus all line components contribute
+\(o(X)\).  Combining the nonlinear and line estimates proves the proposition.
+\end{proof}
+
+\section{Counting Nonempty Rejections}\label{sec:nonempty}
+
+The pieces are now in place.  Every exceptional family has already been shown
+to have shell size \(o(X)\), and each endpoint that survives them carries
+enough terminal support to be counted by Proposition~\ref{prop:slab}.
+
+\begin{proposition}\label{prop:nonempty}
+For the modified greedy construction using the deterministic deletion set from
+Proposition~\ref{prop:barriers}, the number of nonempty rejections \(n\le N\)
+is \(o(N)\).
+\end{proposition}
+
+\begin{proof}
+Work in a dyadic shell \(X<n\le2X\).  Remove the deterministic deletions,
+empty-suffix endpoints, and the exceptional families from
+Propositions~\ref{prop:barriers} and~\ref{prop:localized}.  These contribute
+\(o(X)\) in the shell: the deterministic deletions are density zero, the
+empty-suffix endpoints are controlled by Corollary~\ref{cor:empty-suffix} with
+ambient bound \(2X\), and the localization exceptions were proved either as
+shell \(o(X)\) families or as global \(o(N)\) families applied with \(N=2X\).
+These estimates were established independently of the present proposition.
+
+For every remaining endpoint, Proposition~\ref{prop:localized} applies.
+Discard the \(o(X)\) smooth-left family of Lemma~\ref{lem:smooth-left}.  Then
+every left factor has a chosen label \(p_i=\pplus(x-a_i)>Y_X\), where
+\[
+  Y_X=\exp(\log X/(\log\log X)^2).
+\]
+By Lemma~\ref{lem:terminal-support}, the endpoint supplies at least
+\(\floor{\ell/\Lambda_X^2}\) slab points, where
+\[
+  \Lambda_X=\ceil{\frac{\log(3X)}{\log Y_X}}+2
+  =(\log\log X)^2+O(1).
+\]
+Since Proposition~\ref{prop:localized} gives
+\[
+  \ell\ge b\ge c\frac{\log X}{\log\log X},
+\]
+we may retain the lexicographically first
+\[
+  K_{\rm slab}=
+  \floor{\frac{c\log X}{100(\log\log X)^5}}
+\]
+of these extracted slab points.  The factor \(100\) leaves room for the floor
+loss: for large \(X\), \(\Lambda_X\le2(\log\log X)^2\), so
+\[
+  \frac{\ell}{\Lambda_X^2}\ge
+  \frac{c\log X}{4(\log\log X)^5},
+\]
+and hence
+\[
+  \frac{\ell}{\Lambda_X^2}-1
+  \ge \frac{c\log X}{100(\log\log X)^5}
+  \ge K_{\rm slab}.
+\]
+Thus \(\floor{\ell/\Lambda_X^2}\ge K_{\rm slab}\).
+
+The hypotheses of Proposition~\ref{prop:slab} hold with \(A=7\), \(\kappa=2\),
+\(B_1=B+1\), \(K=K_{\rm slab}\), and \(\theta=b/\ell\).  Here
+Proposition~\ref{prop:localized} supplies \(n=q+h\), \(h\le(\log X)^7\),
+\(x=q^\theta+O(T_X)\) with a fixed implicit constant, \(D_0=q-x>0\),
+\(0<\theta<1\), and the two required bounds on \(1-\theta\).
+Lemma~\ref{lem:terminal-support} gives the distinct
+slab points and distinct prime labels with the two divisibilities; retaining
+the first \(K_{\rm slab}\) points preserves these properties.  Finally,
+\[
+  |r_i|=|a_i+c_i|\le T_X+(\log X)^7\le(\log X)^{B+1}
+\]
+for large \(X\).  The localized parameter tuple is determined by \(h\),
+\((b,\ell)\), and \(K_{\rm slab}\).  Since \(h\le(\log X)^7\) and, by
+Proposition~\ref{prop:localized},
+\[
+  1\le b,\ell\le \ceil{((\log X)^7+1)\log_2(2X)}+2=O((\log X)^8),
+\]
+this gives only
+\(O((\log X)^{23})=X^{o(1)}\) possibilities.  Moreover
+\[
+  K_{\rm slab}\log\log X=o(\log X),
+\]
+and, since
+\[
+  K_{\rm slab}\ge \frac{c\log X}{200(\log\log X)^5}
+\]
+for all large \(X\),
+\[
+  \frac{K_{\rm slab}\log Y_X}{\sqrt{K_{\rm slab}}\log X}
+  =\frac{\sqrt{K_{\rm slab}}}{(\log\log X)^2}\to\infty.
+\]
+Thus Proposition~\ref{prop:slab} counts the surviving endpoints by \(o(X)\).
+Adding back the finitely many \(o(X)\) families removed above, every dyadic
+shell contains \(o(X)\) nonempty rejections.
+
+Finally sum dyadic shells.  If \(f_j\) is the ratio of the number of nonempty
+rejections in \((2^j,2^{j+1}]\) to \(2^j\), then \(f_j\to0\).  For every
+\(\eps>0\), choose \(J_0\) so that \(f_j\le\eps\) for \(j\ge J_0\).  The
+finite initial shells contribute \(O(2^{J_0})\), while the dyadic tail up to
+\(N\) contributes at most
+\[
+  \eps\sum_{2^j\le N}2^j\le2\eps N.
+\]
+Letting \(\eps\to0\) gives \(o(N)\).
+\end{proof}
+
+\section{Proof of the Main Theorem}\label{sec:main-proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Use the deterministic deletion set \(D\) from Proposition~\ref{prop:barriers}
+and run the modified greedy construction.  By
+Proposition~\ref{prop:barriers}, forced deletions contribute \(o(N)\) rejected
+values.  By Corollary~\ref{cor:empty-suffix}, empty-suffix collision
+rejections contribute \(o(N)\).  By Proposition~\ref{prop:nonempty},
+nonempty collision rejections contribute \(o(N)\).
+
+Every rejected \(n\) belongs to the union of these three families.  If
+\(n\in D\), it is forced.  If \(n\notin D\), Lemma~\ref{lem:witness-split}
+gives an old-new witness \(P=nS\).  If some witness has \(S=1\), \(n\) is
+empty-suffix; otherwise the deterministic chosen witness has \(S>1\), and
+\(n\) is counted by the nonempty family.  Disjointness is unnecessary.  Hence
+the total rejected set has density zero, so the accepted set has density one.
+Lemma~\ref{lem:greedy-unique} gives distinct consecutive-block products at
+every finite stage.  The increasing enumeration of the accepted set proves the
+theorem.
+\end{proof}
+
+\begin{thebibliography}{9}
+
+\bibitem{ErGr80}
+P. Erd\H{o}s and R. L. Graham,
+\emph{Old and New Problems and Results in Combinatorial Number Theory},
+Monographies de L'Enseignement Math\'ematique, no. 28,
+Universit\'e de Gen\`eve, 1980.
+
+\bibitem{Bloom421}
+T. F. Bloom,
+\emph{Erd\H{o}s Problem \#421},
+\url{https://www.erdosproblems.com/421}.
+
+\bibitem{MT}
+K. Matom\"aki and J. Ter\"av\"ainen,
+\emph{Almost primes in almost all short intervals II},
+arXiv:2207.05038.
+
+\bibitem{deBruijn}
+N. G. de Bruijn,
+\emph{On the number of positive integers not exceeding \(x\) and free of
+prime factors greater than \(y\)},
+Indag. Math. 13 (1951), 50--60.
+
+\bibitem{Hildebrand}
+A. Hildebrand,
+\emph{Integers without large prime factors},
+J. Th\'eor. Nombres Bordeaux 5 (1993), 411--484.
+
+\bibitem{CCDN}
+W. Castryck, R. Cluckers, P. Dittmann, and K. H. Nguyen,
+\emph{The dimension growth conjecture, polynomial in the degree and without
+logarithmic factors},
+Algebra \& Number Theory 14 (2020), 2261--2294; arXiv:1904.13109.
+
+\bibitem{Mignotte}
+M. Mignotte,
+\emph{An inequality about factors of polynomials},
+Mathematics of Computation 28 (1974), 1153--1157.
+
+\end{thebibliography}
+
+\end{document}
